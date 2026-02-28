@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 export const maxDuration = 60; // Allow up to 60s for Gemini Files API + multimodal inference
 import { GoogleGenAI } from "@google/genai";
-import { SyncStageDraftSchema } from "@/lib/schema";
+import { SyncStageDraftSchema, SegmentSchema } from "@/lib/schema";
+import { z } from "zod";
 import { updateDraft } from "@/lib/store";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { writeFile, unlink } from "fs/promises";
@@ -53,8 +54,14 @@ export async function POST(req: Request) {
 
         const systemInstruction = SYNCSTAGE_SYSTEM_PROMPT;
 
+        // Schema WITHOUT id — Gemini 2.5 Flash mis-handles optional string fields.
+        // We add id server-side after receiving the response.
+        const GeminiResponseSchema = z.object({
+            segments: z.array(SegmentSchema.omit({ id: true })).min(1).max(10),
+            visualConcept: SyncStageDraftSchema.shape.visualConcept,
+        });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const schema = zodToJsonSchema(SyncStageDraftSchema as any);
+        const schema = zodToJsonSchema(GeminiResponseSchema as any);
 
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -96,13 +103,15 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
 
         // Parse and validate the response
         const rawJson = JSON.parse(outputText);
+        console.log("[DRAFT] Gemini raw response (first 300 chars):", JSON.stringify(rawJson).substring(0, 300));
 
-        // Add nanoid to segments
+        // Add nanoid to segments — segments come as objects WITHOUT id from schema
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rawJson.segments.forEach((seg: any) => {
-                seg.id = "seg_" + nanoid(8);
-            });
+            rawJson.segments = rawJson.segments.map((seg: any) => ({
+                ...(typeof seg === "object" && seg !== null ? seg : {}),
+                id: "seg_" + nanoid(8),
+            }));
         }
         rawJson.revision = 0;
 
