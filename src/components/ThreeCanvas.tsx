@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useState, useRef, Suspense } from "react";
+import React, { useEffect, useRef, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { 
-    OrbitControls, 
-    Environment, 
-    Text, 
-    useAnimations, 
-    useGLTF, 
+import {
+    OrbitControls,
+    Environment,
+    Text,
     ContactShadows,
     Float
 } from "@react-three/drei";
@@ -17,11 +15,6 @@ import * as THREE from "three";
 
 function Dancer({ activeClip }: { activeClip: string }) {
     const group = useRef<THREE.Group>(null);
-    
-    // 🔥 NOTE: In a real demo, you'd place a .glb in /public/models/
-    // Since we don't have it yet, we'll use a placeholder but keep the logic structure.
-    // const { scene, animations } = useGLTF("/models/dancer_all_clips.glb");
-    // const { actions } = useAnimations(animations, group);
 
     useEffect(() => {
         if (!group.current) return;
@@ -36,15 +29,6 @@ function Dancer({ activeClip }: { activeClip: string }) {
                 group.current?.scale.set(1, style.scaleY, 1);
             }, 250);
         }
-
-        /* 
-        // REAL ANIMATION LOGIC (when GLB is ready):
-        const action = actions[activeClip];
-        if (action) {
-            action.reset().fadeIn(0.5).play();
-            return () => { action.fadeOut(0.5); };
-        }
-        */
     }, [activeClip]);
 
     return (
@@ -53,7 +37,6 @@ function Dancer({ activeClip }: { activeClip: string }) {
                 <capsuleGeometry args={[0.4, 1, 4, 16]} />
                 <meshStandardMaterial color="#6b21a8" emissive="#3b0764" roughness={0.3} metalness={0.8} />
             </mesh>
-            {/* Visual indicator for feet */}
             <mesh position={[0, 0, 0]} receiveShadow>
                 <circleGeometry args={[0.5, 32]} />
                 <meshStandardMaterial color="#000" transparent opacity={0.5} />
@@ -89,24 +72,20 @@ export default function ThreeCanvas({
                 <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
                     <Dancer activeClip={activeClip} />
                 </Float>
-                
-                <ContactShadows 
-                    position={[0, -0.01, 0]} 
-                    opacity={0.4} 
-                    scale={10} 
-                    blur={2} 
-                    far={4.5} 
+
+                <ContactShadows
+                    position={[0, -0.01, 0]}
+                    opacity={0.4}
+                    scale={10}
+                    blur={2}
+                    far={4.5}
                 />
             </Suspense>
 
             {/* Stage Floor */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
                 <planeGeometry args={[20, 20]} />
-                <meshStandardMaterial 
-                    color="#111" 
-                    roughness={0.2} 
-                    metalness={0.9} 
-                />
+                <meshStandardMaterial color="#111" roughness={0.2} metalness={0.9} />
             </mesh>
 
             {/* UI Text in 3D */}
@@ -133,9 +112,9 @@ export default function ThreeCanvas({
                 </Text>
             )}
 
-            <OrbitControls 
-                makeDefault 
-                enablePan={false} 
+            <OrbitControls
+                makeDefault
+                enablePan={false}
                 maxPolarAngle={Math.PI / 2}
                 minDistance={3}
                 maxDistance={10}

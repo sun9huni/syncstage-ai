@@ -13,7 +13,7 @@ export default function Home() {
   const [loadingMsg, setLoadingMsg] = useState("Gemini is Choreographing...");
   const [chatInput, setChatInput] = useState("");
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
-  const [audioUrl, setAudioUrl] = useState<string | null>("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+  const [audioUrl, setAudioUrl] = useState<string | null>("/demo.wav");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Image Generation States
@@ -73,7 +73,7 @@ export default function Home() {
       const data = await res.json();
       if (data.success) {
         setDraft(data.draft);
-        setAudioUrl("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+        setAudioUrl("/demo.wav");
         setImageUrl(null);
         setHistory([{ timestamp: new Date().toISOString(), description: "Demo preset loaded." }]);
       }
@@ -209,9 +209,9 @@ export default function Home() {
             <span className="text-neutral-400">Audio Master Pipeline</span>
             <div className="flex gap-2">
               <button
-                onClick={() => setAudioUrl("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")}
+                onClick={() => setAudioUrl("/demo.wav")}
                 className="bg-neutral-700 hover:bg-neutral-600 text-neutral-300 px-2 py-1 rounded text-[10px] transition-all border border-neutral-600"
-                title="Load demo track"
+                title="Load built-in demo track"
               >
                 DEMO TRACK
               </button>
@@ -266,7 +266,7 @@ export default function Home() {
                   ) : (
                     <div className="flex-1 mb-4 bg-black/40 rounded-lg border border-dashed border-neutral-700 flex flex-col items-center justify-center p-4 text-center">
                       <p className="text-[10px] text-neutral-500 mb-3 italic leading-relaxed">
-                        "{draft.visualConcept.imagePrompt.substring(0, 80)}..."
+                        &quot;{draft.visualConcept.imagePrompt.substring(0, 80)}...&quot;
                       </p>
                       <button
                         onClick={handleGenerateImage}
@@ -308,7 +308,7 @@ export default function Home() {
           {/* A&R Chat Box */}
           <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">
             <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold text-neutral-400">
-              A&R Director's Notes
+              A&amp;R Director&apos;s Notes
             </div>
             <div className="flex-1 p-3 overflow-y-auto text-[11px] space-y-3 font-mono">
               {history.length === 0 && <div className="text-neutral-600 italic">History is empty. Ready for instructions.</div>}

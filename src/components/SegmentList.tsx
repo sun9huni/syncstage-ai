@@ -24,8 +24,8 @@ export default function SegmentList({
                     <div
                         key={seg.id || idx}
                         className={`p-3 rounded border text-xs flex flex-col gap-1 transition-all duration-300 ${isActive
-                                ? "bg-fuchsia-900/40 border-fuchsia-500 shadow-[0_0_10px_rgba(217,70,239,0.2)]"
-                                : "bg-neutral-800/50 border-neutral-700 opacity-70 hover:opacity-100"
+                            ? "bg-fuchsia-900/40 border-fuchsia-500 shadow-[0_0_10px_rgba(217,70,239,0.2)]"
+                            : "bg-neutral-800/50 border-neutral-700 opacity-70 hover:opacity-100"
                             }`}
                     >
                         <div className="flex justify-between items-center font-mono">
@@ -42,7 +42,7 @@ export default function SegmentList({
                             </span>
                         </div>
                         <div className="text-[10px] text-neutral-500 italic mt-1 leading-relaxed">
-                            "{seg.reason}"
+                            &quot;{seg.reason}&quot;
                         </div>
                     </div>
                 );

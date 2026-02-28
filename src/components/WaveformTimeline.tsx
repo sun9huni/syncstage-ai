@@ -14,6 +14,8 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
     const wavesurferRef = useRef<WaveSurfer | null>(null);
     const regionsPluginRef = useRef<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState("0.00");
+    const [duration, setDuration] = useState("0.00");
 
     // Initialize wavesurfer
     useEffect(() => {
@@ -36,6 +38,8 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
         // 🔥 Single Source of Truth: Wavesurfer dictates the time
         const handleTimeUpdate = () => {
             if (wavesurferRef.current) {
+                const timeStr = wavesurferRef.current.getCurrentTime().toFixed(2);
+                setCurrentTime(timeStr);
                 onTimeUpdate(wavesurferRef.current.getCurrentTime() * 1000);
             }
         };
@@ -43,6 +47,11 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
         wavesurferRef.current.on('timeupdate', handleTimeUpdate);
         wavesurferRef.current.on('play', () => setIsPlaying(true));
         wavesurferRef.current.on('pause', () => setIsPlaying(false));
+        wavesurferRef.current.on('ready', () => {
+            if (wavesurferRef.current) {
+                setDuration(wavesurferRef.current.getDuration().toFixed(2));
+            }
+        });
 
         // Ensure seek also updates the time immediately
         wavesurferRef.current.on('interaction', handleTimeUpdate);
@@ -93,12 +102,12 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
 
             <div className="mt-6 flex justify-center items-center gap-8">
                 <div className="text-[10px] font-mono text-neutral-500 w-16 text-right">
-                    {wavesurferRef.current ? wavesurferRef.current.getCurrentTime().toFixed(2) : "0.00"}s
+                    {currentTime}s
                 </div>
 
                 <button
                     onClick={togglePlay}
-                    disabled={!draft}
+                    disabled={!audioUrl}
                     className="w-14 h-14 bg-indigo-600 rounded-full flex items-center justify-center text-white hover:bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.4)] transition-all active:scale-90 disabled:opacity-30 disabled:shadow-none"
                 >
                     {isPlaying ? (
@@ -109,7 +118,7 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
                 </button>
 
                 <div className="text-[10px] font-mono text-neutral-500 w-16">
-                    {wavesurferRef.current ? wavesurferRef.current.getDuration().toFixed(2) : "0.00"}s
+                    {duration}s
                 </div>
             </div>
         </div>
