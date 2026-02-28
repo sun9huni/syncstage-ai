@@ -164,7 +164,7 @@ export default function Home() {
     { label: "더 파워풀하게", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "더 파워풀하게", segments: d.segments.map((s, i) => i === 2 ? { ...s, clipId: "arms_hiphop" as const, intensity: 10, reason: "Maximum energy drop — crowd ignition." } : s) }) },
     { label: "힙합 무드로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "힙합 무드로", segments: d.segments.map(s => ({ ...s, clipId: "hiphop_dance" as const, intensity: Math.min(10, s.intensity + 1) })) }) },
     { label: "사이버펑크 스타일", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "사이버펑크 스타일", visualConcept: { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and neon chrome on a dark laser stage, cinematic 8k." } }) },
-    { label: "재즈댄스 포인트", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "재즈댄스 포인트", segments: d.segments.map((s, i) => i === 4 ? { ...s, clipId: "jazz_dance" as const, intensity: 9, reason: "Iconic jazz finale." } : s) }) },
+    { label: "재즈댄스 포인트", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "재즈댄스 포인트", segments: d.segments.map((s, i) => i === d.segments.length - 1 ? { ...s, clipId: "jazz_dance" as const, intensity: 9, reason: "Iconic jazz finale." } : s) }) },
   ];
 
   const handleMockPatch = (patch: typeof DEMO_PATCHES[0]) => {

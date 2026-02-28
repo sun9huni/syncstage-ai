@@ -30,7 +30,7 @@ const tools = [{
                 type: Type.OBJECT,
                 properties: {
                     style: { type: Type.STRING, description: "New style name (e.g. Cyberpunk, Royal, Street)" },
-                    imagePrompt: { type: Type.STRING, description: "Detailed description for Nano Banana image generation" },
+                    imagePrompt: { type: Type.STRING, description: "Detailed description for Gemini image generation" },
                 },
                 required: ["style", "imagePrompt"],
             },
