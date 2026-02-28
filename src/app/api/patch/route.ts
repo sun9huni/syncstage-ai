@@ -144,7 +144,15 @@ Apply the necessary changes using the tools provided.
         const fallbackDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
         const instLower = instruction.toLowerCase();
 
-        if (instLower.includes("intense") || instLower.includes("powerful") || instLower.includes("강하") || instLower.includes("강렬") || instLower.includes("파워")) {
+        if (instLower.includes("shadows") || instLower.includes("magic") || instLower.includes("y2k 펑크")) {
+            // Golden Path Fallback
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            fallbackDraft.segments = fallbackDraft.segments.map(s => s.startMs >= 5000 ? { ...s, clipId: "hiphop_dance" as any } : s);
+            fallbackDraft.visualConcept = {
+                style: "Red & Black Y2K Punk Look",
+                imagePrompt: "K-pop performer in red and black y2k punk streetwear, leather straps, silver chains, dark dramatic stage lighting, 8k cinematic."
+            };
+        } else if (instLower.includes("intense") || instLower.includes("powerful") || instLower.includes("강하") || instLower.includes("강렬") || instLower.includes("파워")) {
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.min(10, s.intensity + 2) }));
         } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
