@@ -20,13 +20,13 @@ function KPopDancer({ activeClip }: { activeClip: string }) {
     const group = useRef<THREE.Group>(null);
 
     // 1. Base model load
-    const { scene } = useGLTF('/models/Ch46_nonPBR (1).glb');
+    const { scene } = useGLTF('/models/dancer_base.glb');
 
     // 2. Load animation files
-    const { animations: idleAnim } = useGLTF('/models/Happy Idle.glb');
-    const { animations: hiphopAnim } = useGLTF('/models/Hip Hop Dancing.glb');
-    const { animations: armsAnim } = useGLTF('/models/Arms Hip Hop Dance.glb');
-    const { animations: jazzAnim } = useGLTF('/models/Jazz Dancing.glb');
+    const { animations: idleAnim } = useGLTF('/models/happy_idle.glb');
+    const { animations: hiphopAnim } = useGLTF('/models/hiphop_dance.glb');
+    const { animations: armsAnim } = useGLTF('/models/arms_hiphop.glb');
+    const { animations: jazzAnim } = useGLTF('/models/jazz_dance.glb');
 
     // 3. Combine animations into one array and map names
     const allAnimations = React.useMemo(() => {
@@ -70,11 +70,11 @@ function KPopDancer({ activeClip }: { activeClip: string }) {
     );
 }
 
-useGLTF.preload('/models/Ch46_nonPBR (1).glb');
-useGLTF.preload('/models/Happy Idle.glb');
-useGLTF.preload('/models/Hip Hop Dancing.glb');
-useGLTF.preload('/models/Arms Hip Hop Dance.glb');
-useGLTF.preload('/models/Jazz Dancing.glb');
+useGLTF.preload('/models/dancer_base.glb');
+useGLTF.preload('/models/happy_idle.glb');
+useGLTF.preload('/models/hiphop_dance.glb');
+useGLTF.preload('/models/arms_hiphop.glb');
+useGLTF.preload('/models/jazz_dance.glb');
 
 export default function ThreeCanvas({
     activeSegment,
