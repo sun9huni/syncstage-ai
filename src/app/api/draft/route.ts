@@ -105,12 +105,15 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
         const rawJson = JSON.parse(outputText);
         console.log("[DRAFT] Gemini raw response (first 300 chars):", JSON.stringify(rawJson).substring(0, 300));
 
-        // Add nanoid to segments — segments come as objects WITHOUT id from schema
+        // Add id + coerce numeric fields — Gemini 2.5 Flash may return numbers as strings
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             rawJson.segments = rawJson.segments.map((seg: any) => ({
                 ...(typeof seg === "object" && seg !== null ? seg : {}),
                 id: "seg_" + nanoid(8),
+                startMs: Number(seg.startMs),
+                endMs: Number(seg.endMs),
+                intensity: Math.round(Number(seg.intensity)),
             }));
         }
         rawJson.revision = 0;
