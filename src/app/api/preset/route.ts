@@ -1,0 +1,66 @@
+import { NextResponse } from "next/server";
+import { updateDraft } from "@/lib/store";
+import { SyncStageDraft } from "@/lib/schema";
+
+// A rich, hand-crafted demo preset — no API call needed.
+// Used as a guaranteed fallback for live demo reliability.
+const DEMO_PRESET: SyncStageDraft = {
+    revision: 0,
+    segments: [
+        {
+            id: "preset_01",
+            startMs: 0,
+            endMs: 7500,
+            clipId: "idle_bounce",
+            intensity: 3,
+            reason: "Ethereal intro — sparse synth pads, establishing stage tension.",
+        },
+        {
+            id: "preset_02",
+            startMs: 7500,
+            endMs: 18000,
+            clipId: "hiphop_groove",
+            intensity: 6,
+            reason: "Pre-chorus build — kick pattern locks in, syncopated groove drives momentum.",
+        },
+        {
+            id: "preset_03",
+            startMs: 18000,
+            endMs: 32000,
+            clipId: "poppin_heavy",
+            intensity: 10,
+            reason: "MAIN HOOK — full bass drop, maximum crowd energy, signature group move.",
+        },
+        {
+            id: "preset_04",
+            startMs: 32000,
+            endMs: 44000,
+            clipId: "wave_fluid",
+            intensity: 5,
+            reason: "Melodic bridge — emotional peak, fluid wave passes through the line.",
+        },
+        {
+            id: "preset_05",
+            startMs: 44000,
+            endMs: 60000,
+            clipId: "y2k_point",
+            intensity: 9,
+            reason: "FINALE — iconic Y2K point move, camera freeze, curtain call pose.",
+        },
+    ],
+    visualConcept: {
+        style: "Cyberpunk Streetwear",
+        imagePrompt:
+            "Five K-pop idols in iridescent holographic jackets, chrome accessories, neon-lit rain-slicked stage, dramatic fog machines, stadium crowd, 8k cinematic wide shot.",
+    },
+    lastAction: "Demo preset loaded",
+};
+
+export async function POST() {
+    try {
+        updateDraft(DEMO_PRESET, "Demo preset loaded — ready for live presentation.");
+        return NextResponse.json({ success: true, draft: DEMO_PRESET });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

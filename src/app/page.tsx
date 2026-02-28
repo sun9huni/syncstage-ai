@@ -18,6 +18,7 @@ export default function Home() {
 
   // Image Generation States
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageSource, setImageSource] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
 
   const showError = (msg: string) => {
@@ -41,6 +42,7 @@ export default function Home() {
 
     setLoading(true);
     setImageUrl(null);
+    setImageSource(null);
     setAudioUrl(URL.createObjectURL(file));
     const formData = new FormData();
     formData.append("file", file);
@@ -57,6 +59,26 @@ export default function Home() {
       setHistory(stateData.diffHistory || []);
     } catch (err: any) {
       showError(`Upload failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+      setLoadingMsg("Gemini is Choreographing...");
+    }
+  };
+
+  const handleLoadPreset = async () => {
+    setLoading(true);
+    setLoadingMsg("Loading demo preset...");
+    try {
+      const res = await fetch("/api/preset", { method: "POST" });
+      const data = await res.json();
+      if (data.success) {
+        setDraft(data.draft);
+        setAudioUrl("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+        setImageUrl(null);
+        setHistory([{ timestamp: new Date().toISOString(), description: "Demo preset loaded." }]);
+      }
+    } catch (err: any) {
+      showError(`Preset failed: ${err.message}`);
     } finally {
       setLoading(false);
       setLoadingMsg("Gemini is Choreographing...");
@@ -97,7 +119,10 @@ export default function Home() {
       const res = await fetch("/api/visual", { method: "POST" });
       const data = await res.json();
       if (data.error) { showError(`Visual failed: ${data.error}`); return; }
-      if (data.success) setImageUrl(data.imageUrl);
+      if (data.success) {
+        setImageUrl(data.imageUrl);
+        setImageSource(data.source || null);
+      }
     } catch (err: any) {
       showError(`Visual failed: ${err.message}`);
     } finally {
@@ -138,12 +163,22 @@ export default function Home() {
       )}
       <header className="p-4 border-b border-neutral-800 flex justify-between items-center bg-black">
         <h1 className="text-xl font-bold tracking-tight text-fuchsia-500 italic">SyncStage AI</h1>
-        {draft && (
-          <div className="text-xs bg-neutral-800 px-3 py-1 rounded-full text-neutral-400 flex items-center gap-2 border border-neutral-700">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-            <span>Revision: <span className="text-white font-mono">{draft.revision}</span></span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleLoadPreset}
+            disabled={loading}
+            className="text-xs bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-full transition-all font-mono tracking-tight disabled:opacity-40"
+            title="Load a pre-built demo — no API call needed"
+          >
+            ⚡ LOAD DEMO PRESET
+          </button>
+          {draft && (
+            <div className="text-xs bg-neutral-800 px-3 py-1 rounded-full text-neutral-400 flex items-center gap-2 border border-neutral-700">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span>Revision: <span className="text-white font-mono">{draft.revision}</span></span>
+            </div>
+          )}
+        </div>
       </header>
 
       <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 grid-rows-2 gap-4 p-4">
@@ -213,7 +248,13 @@ export default function Home() {
                   {imageUrl ? (
                     <div className="relative group flex-1 mb-4 rounded-lg overflow-hidden border border-neutral-700">
                       <img src={imageUrl} alt="Concept" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-3">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-between p-3">
+                        <div className="text-[9px] px-2 py-0.5 rounded-full border backdrop-blur-sm font-mono"
+                          style={imageSource === "gemini-2.0-flash"
+                            ? { background: "rgba(217,70,239,0.15)", borderColor: "rgba(217,70,239,0.4)", color: "#e879f9" }
+                            : { background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.2)", color: "#9ca3af" }}>
+                          {imageSource === "gemini-2.0-flash" ? "✦ AI Refined" : "◈ Style Mapped"}
+                        </div>
                         <button
                           onClick={handleGenerateImage}
                           className="text-[10px] bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded border border-white/20 transition-colors"

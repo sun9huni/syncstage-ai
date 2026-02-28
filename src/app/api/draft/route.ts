@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+export const maxDuration = 60; // Allow up to 60s for Gemini Files API + multimodal inference
 import { GoogleGenAI } from "@google/genai";
 import { SyncStageDraftSchema, SyncStageDraft } from "@/lib/schema";
 import { updateDraft } from "@/lib/store";

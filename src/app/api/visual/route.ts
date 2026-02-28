@@ -20,14 +20,15 @@ export async function POST(req: Request) {
         const prompt = getVisualPrompt(concept.style, concept.imagePrompt);
 
         let description = `${concept.style} — ${concept.imagePrompt.substring(0, 80)}...`;
+        let aiGenerated = false;
         try {
             const response = await ai.models.generateContent({
                 model: "gemini-2.0-flash",
                 contents: prompt,
             });
             description = response.text || description;
+            aiGenerated = true;
         } catch (aiErr: any) {
-            // Graceful degradation: use concept text if Gemini is unavailable
             console.warn("Gemini visual generation skipped:", aiErr.message);
         }
 
@@ -53,7 +54,8 @@ export async function POST(req: Request) {
         return NextResponse.json({
             success: true,
             imageUrl: mockImageUrl,
-            description: description
+            description: description,
+            source: aiGenerated ? "gemini-2.0-flash" : "fallback",
         });
 
     } catch (error: any) {
