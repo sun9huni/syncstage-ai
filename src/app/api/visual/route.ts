@@ -107,7 +107,7 @@ export async function POST() {
     let description = `${concept.style} — ${concept.imagePrompt.substring(0, 80)}...`;
     try {
         const textResp = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3-flash-preview",
             contents: `Write one vivid sentence describing this K-pop stage concept for a wardrobe mood board: "${concept.style}, ${concept.imagePrompt.substring(0, 120)}"`,
         });
         description = textResp.text || description;
