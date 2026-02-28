@@ -4,7 +4,9 @@ import { getState } from "@/lib/store";
 
 export const maxDuration = 60;
 
-const apiKey = process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY || "dummy-key-for-build";
+// Image generation (gemini-2.0-flash-exp-image-generation) works on KEY1 free tier.
+// KEY2 has limit:0 for this model — so we deliberately use KEY1 first here.
+const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY2 || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
 
 // Curated high-quality stage/fashion Unsplash photos per style
