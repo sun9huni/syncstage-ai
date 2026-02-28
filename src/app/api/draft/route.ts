@@ -83,22 +83,24 @@ The JSON must follow this EXACT structure:
   }
 }
 
-Rules:
-- You MUST create EXACTLY 5 segments. No more, no fewer.
-- Cover the FULL audio duration from 0ms to the very end.
-- Suggested structure for a ~30s track:
-  Segment 1: intro (0~5000ms) → happy_idle, intensity 2-4
-  Segment 2: verse build (5000~12000ms) → hiphop_dance, intensity 5-7
-  Segment 3: beat drop / chorus (12000~20000ms) → arms_hiphop, intensity 9-10
-  Segment 4: bridge / point choreo (20000~26000ms) → jazz_dance, intensity 6-8
-  Segment 5: finale (26000~end) → arms_hiphop, intensity 8-10
-- Adjust exact boundaries based on what you actually HEAR in the audio.
-- clipId must be one of: happy_idle | hiphop_dance | arms_hiphop | jazz_dance
-- intensity must be an integer 1-10
-- All timestamps must be integers in milliseconds
-- Derive visualConcept from the audio's emotional vibe and genre
+CRITICAL RULES — you MUST follow all of them:
+1. The "segments" array MUST contain EXACTLY 5 objects. Not 3, not 4, not 6. EXACTLY 5.
+2. Segment 1 startMs MUST be 0.
+3. The last segment endMs MUST be the actual end time of the audio in milliseconds (approximately 30000ms).
+4. Every ms between 0 and the end of the audio must be covered — NO gaps between segments.
+5. Each segment's endMs must equal the next segment's startMs.
+6. clipId must be one of: "happy_idle" | "hiphop_dance" | "arms_hiphop" | "jazz_dance"
+7. intensity must be an integer 1-10
+8. Suggested breakpoints for a ~30s track:
+   Segment 1: 0~5000ms → happy_idle (intro, intensity 2-4)
+   Segment 2: 5000~12000ms → hiphop_dance (verse build, intensity 5-7)
+   Segment 3: 12000~20000ms → arms_hiphop (beat drop/chorus, intensity 9-10)
+   Segment 4: 20000~26000ms → jazz_dance (bridge/point choreo, intensity 6-8)
+   Segment 5: 26000~30000ms → arms_hiphop (finale, intensity 8-10)
+9. Adjust boundaries based on what you actually HEAR — the above are suggestions only.
+10. Derive visualConcept from the audio's emotional vibe and genre.
 
-Return ONLY the JSON object. No other text.`
+Return ONLY the JSON object. No markdown, no explanation, no extra text.`
                 }
             ],
             config: {
@@ -128,18 +130,28 @@ Return ONLY the JSON object. No other text.`
                 reason: String(seg.reason ?? "").substring(0, 140),
             }));
 
-            // Clamp timestamps to audio duration (30000ms max).
-            // Gemini sometimes returns timestamps in wrong scale.
+            // If Gemini returned fewer than 4 segments, throw to trigger the rich fallback.
+            if (segments.length < 4) {
+                throw new Error(`Gemini returned only ${segments.length} segments — triggering fallback for better demo quality.`);
+            }
+
+            // ALWAYS scale timestamps to fill the full AUDIO_DURATION_MS.
+            // Handles two failure modes:
+            //   1. Gemini returns wrong scale (e.g. 270s for a 30s track) → scale DOWN
+            //   2. Gemini only covers part of the audio (e.g. 0–15s for a 30s track) → scale UP
             const maxEndMs = Math.max(...segments.map((s: { endMs: number }) => s.endMs));
             const AUDIO_DURATION_MS = 30000;
-            if (maxEndMs > AUDIO_DURATION_MS) {
+            if (maxEndMs !== AUDIO_DURATION_MS) {
                 const scale = AUDIO_DURATION_MS / maxEndMs;
                 segments = segments.map((s: { startMs: number; endMs: number;[key: string]: unknown }) => ({
                     ...s,
                     startMs: Math.round(s.startMs * scale),
-                    endMs: Math.min(AUDIO_DURATION_MS, Math.round(s.endMs * scale)),
+                    endMs: Math.round(s.endMs * scale),
                 }));
             }
+            // Guarantee the last segment always reaches exactly the end of the audio.
+            segments[segments.length - 1].endMs = AUDIO_DURATION_MS;
+
             rawJson.segments = segments;
         }
         rawJson.revision = 0;
