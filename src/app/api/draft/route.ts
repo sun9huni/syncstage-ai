@@ -114,7 +114,8 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
 
         return NextResponse.json(validatedDraft);
     } catch (error: unknown) {
-        console.error("Draft API Error (Quota exceeded or timeout) - Triggering Golden Path Fallback:", error);
+        const errMsg = error instanceof Error ? error.message : String(error);
+        console.error("[DRAFT FALLBACK TRIGGERED] Error:", errMsg);
 
         // Golden Path Fallback — 5 rich segments matching 15s demo audio
         const fallbackDraft = {
@@ -170,7 +171,7 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
         const validatedFallback = SyncStageDraftSchema.parse(fallbackDraft);
         updateDraft(validatedFallback, "[Fallback Mode] Initial draft generated from golden path audio.");
 
-        return NextResponse.json(validatedFallback);
+        return NextResponse.json({ ...validatedFallback, _fallback: true, _error: errMsg });
     } finally {
         // Cleanup local temp file
         if (tempPath) {
