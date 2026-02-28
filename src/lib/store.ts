@@ -18,7 +18,7 @@ const initialDraft: SyncStageDraft = {
             id: "seg_01",
             startMs: 0,
             endMs: 8000,
-            clipId: "idle_bounce",
+            clipId: "happy_idle",
             intensity: 3,
             reason: "Soft intro — minimal percussion, establishing stage presence."
         },
@@ -26,7 +26,7 @@ const initialDraft: SyncStageDraft = {
             id: "seg_02",
             startMs: 8000,
             endMs: 20000,
-            clipId: "hiphop_groove",
+            clipId: "hiphop_dance",
             intensity: 6,
             reason: "Pre-chorus builds momentum with syncopated groove."
         },
@@ -34,7 +34,7 @@ const initialDraft: SyncStageDraft = {
             id: "seg_03",
             startMs: 20000,
             endMs: 34000,
-            clipId: "poppin_heavy",
+            clipId: "arms_hiphop",
             intensity: 9,
             reason: "Main hook — full bass drop, maximum energy, crowd moment."
         },
@@ -42,7 +42,7 @@ const initialDraft: SyncStageDraft = {
             id: "seg_04",
             startMs: 34000,
             endMs: 46000,
-            clipId: "wave_fluid",
+            clipId: "jazz_dance",
             intensity: 5,
             reason: "Bridge — melodic interlude with smooth fluid transitions."
         },
@@ -50,9 +50,9 @@ const initialDraft: SyncStageDraft = {
             id: "seg_05",
             startMs: 46000,
             endMs: 60000,
-            clipId: "y2k_point",
+            clipId: "arms_hiphop",
             intensity: 8,
-            reason: "Final chorus — Y2K signature point move, iconic ending pose."
+            reason: "Final chorus — signature point move, iconic ending pose."
         }
     ],
     visualConcept: {

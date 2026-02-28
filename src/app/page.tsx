@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import WaveformTimeline from "@/components/WaveformTimeline";
 import ThreeCanvas from "@/components/ThreeCanvas";
 import SegmentList from "@/components/SegmentList";
+import WardrobeConceptPanel from "@/components/WardrobeConceptPanel";
 import { SyncStageDraft } from "@/lib/schema";
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
   // Image Generation States
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageSource, setImageSource] = useState<string | null>(null);
+  const [imageDescription, setImageDescription] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
 
   const showError = (msg: string) => {
@@ -122,6 +124,7 @@ export default function Home() {
       if (data.success) {
         setImageUrl(data.imageUrl);
         setImageSource(data.source || null);
+        setImageDescription(data.description || null);
       }
     } catch (err: any) {
       showError(`Visual failed: ${err.message}`);
@@ -132,10 +135,10 @@ export default function Home() {
 
   // Demo-safe mock patch: instant visual change without API call
   const DEMO_PATCHES = [
-    { label: "더 파워풀하게", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "더 파워풀하게", segments: d.segments.map((s, i) => i === 2 ? { ...s, clipId: "poppin_heavy" as const, intensity: 10, reason: "Maximum energy drop — crowd ignition moment." } : s) }) },
-    { label: "힙합 무드로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "힙합 무드로", segments: d.segments.map(s => ({ ...s, clipId: "hiphop_groove" as const, intensity: Math.min(10, s.intensity + 1) })) }) },
+    { label: "더 파워풀하게", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "더 파워풀하게", segments: d.segments.map((s, i) => i === 2 ? { ...s, clipId: "arms_hiphop" as const, intensity: 10, reason: "Maximum energy drop — crowd ignition moment." } : s) }) },
+    { label: "힙합 무드로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "힙합 무드로", segments: d.segments.map(s => ({ ...s, clipId: "hiphop_dance" as const, intensity: Math.min(10, s.intensity + 1) })) }) },
     { label: "사이버펑크 스타일", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "사이버펑크 스타일", visualConcept: { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and neon chrome on a dark laser stage, cinematic 8k." } }) },
-    { label: "Y2K 포인트로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "Y2K 포인트로", segments: d.segments.map((s, i) => i === 4 ? { ...s, clipId: "y2k_point" as const, intensity: 9, reason: "Iconic Y2K finale — signature point move." } : s) }) },
+    { label: "재즈댄스 포인트", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "재즈댄스 포인트", segments: d.segments.map((s, i) => i === 4 ? { ...s, clipId: "jazz_dance" as const, intensity: 9, reason: "Iconic jazz finale — elegant ending pose." } : s) }) },
   ];
 
   const handleMockPatch = (patch: typeof DEMO_PATCHES[0]) => {
@@ -232,60 +235,17 @@ export default function Home() {
 
         {/* Panel 3: Visual Concept / Segment List / A&R Chat */}
         <div className="grid grid-cols-3 gap-4">
-          {/* Visual Concept */}
-          <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">
-            <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold flex justify-between items-center">
-              <span className="text-neutral-400">Stage Wardrobe</span>
-              {draft?.visualConcept && (
-                <span className="text-[10px] text-fuchsia-400 px-2 py-0.5 bg-fuchsia-500/10 rounded border border-fuchsia-500/20">
-                  {draft.visualConcept.style}
-                </span>
-              )}
-            </div>
-            <div className="p-4 flex-1 overflow-y-auto relative">
-              {draft?.visualConcept ? (
-                <div className="h-full flex flex-col">
-                  {imageUrl ? (
-                    <div className="relative group flex-1 mb-4 rounded-lg overflow-hidden border border-neutral-700">
-                      <img src={imageUrl} alt="Concept" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-between p-3">
-                        <div className="text-[9px] px-2 py-0.5 rounded-full border backdrop-blur-sm font-mono"
-                          style={imageSource === "gemini-2.0-flash"
-                            ? { background: "rgba(217,70,239,0.15)", borderColor: "rgba(217,70,239,0.4)", color: "#e879f9" }
-                            : { background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.2)", color: "#9ca3af" }}>
-                          {imageSource === "gemini-2.0-flash" ? "✦ AI Refined" : "◈ Style Mapped"}
-                        </div>
-                        <button
-                          onClick={handleGenerateImage}
-                          className="text-[10px] bg-white/10 hover:bg-white/20 backdrop-blur-md text-white px-2 py-1 rounded border border-white/20 transition-colors"
-                        >
-                          Regenerate
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex-1 mb-4 bg-black/40 rounded-lg border border-dashed border-neutral-700 flex flex-col items-center justify-center p-4 text-center">
-                      <p className="text-[10px] text-neutral-500 mb-3 italic leading-relaxed">
-                        &quot;{draft.visualConcept.imagePrompt.substring(0, 80)}...&quot;
-                      </p>
-                      <button
-                        onClick={handleGenerateImage}
-                        disabled={imageLoading}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded-full text-[11px] font-bold tracking-widest uppercase transition-all shadow-lg"
-                      >
-                        {imageLoading ? "Generating..." : "Visualize Concept"}
-                      </button>
-                    </div>
-                  )}
-                  <div className="text-[10px] text-neutral-400 leading-relaxed bg-black/20 p-2 rounded">
-                    <span className="text-fuchsia-500 font-bold">PROMPT:</span> {draft.visualConcept.imagePrompt}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-neutral-600 h-full flex items-center justify-center italic text-xs">Waiting for AI Draft...</div>
-              )}
-            </div>
-          </div>
+          {/* Wardrobe Concept Panel — Imagen 3 */}
+          <WardrobeConceptPanel
+            imageUrl={imageUrl}
+            styleName={draft?.visualConcept?.style ?? null}
+            description={imageDescription}
+            source={imageSource}
+            isLoading={imageLoading}
+            onGenerate={handleGenerateImage}
+            onRegenerate={handleGenerateImage}
+            hasDraft={!!draft}
+          />
 
           {/* Segment List */}
           <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">

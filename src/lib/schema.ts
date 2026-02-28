@@ -1,11 +1,10 @@
 import { z } from "zod";
 
 export const moveTags = [
-  "idle_bounce",
-  "hiphop_groove",
-  "poppin_heavy",
-  "wave_fluid",
-  "y2k_point"
+  "happy_idle",
+  "hiphop_dance",
+  "arms_hiphop",
+  "jazz_dance"
 ] as const;
 
 export const SegmentSchema = z.object({

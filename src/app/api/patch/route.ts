@@ -146,15 +146,15 @@ Apply the necessary changes using the tools provided.
         } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
         } else if (instLower.includes("hip") || instLower.includes("groove") || instLower.includes("힙합")) {
-            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_groove" as any }));
-        } else if (instLower.includes("pop") || instLower.includes("팝핀")) {
-            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "poppin_heavy" as any }));
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_dance" as any }));
+        } else if (instLower.includes("pop") || instLower.includes("팝핀") || instLower.includes("브레이크")) {
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "arms_hiphop" as any }));
         } else if (instLower.includes("cyber") || instLower.includes("dark") || instLower.includes("어둡") || instLower.includes("사이버")) {
             fallbackDraft.visualConcept = { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and chrome neon accents on a dark futuristic stage with laser beams, 8k cinematic." };
-        } else if (instLower.includes("y2k") || instLower.includes("포인트")) {
-            fallbackDraft.segments = fallbackDraft.segments.map((s, i) => i === fallbackDraft.segments.length - 1 ? { ...s, clipId: "y2k_point" as any, intensity: 9 } : s);
+        } else if (instLower.includes("y2k") || instLower.includes("포인트") || instLower.includes("재즈")) {
+            fallbackDraft.segments = fallbackDraft.segments.map((s, i) => i === fallbackDraft.segments.length - 1 ? { ...s, clipId: "jazz_dance" as any, intensity: 9 } : s);
         } else {
-            fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "poppin_heavy" as any, intensity: Math.min(10, fallbackDraft.segments[0].intensity + 1) };
+            fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "arms_hiphop" as any, intensity: Math.min(10, fallbackDraft.segments[0].intensity + 1) };
         }
 
         fallbackDraft.revision += 1;

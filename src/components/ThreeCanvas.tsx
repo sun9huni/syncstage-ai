@@ -7,43 +7,74 @@ import {
     Environment,
     Text,
     ContactShadows,
-    Float
+    Float,
+    useGLTF,
+    useAnimations,
+    Html
 } from "@react-three/drei";
 import { SyncStageDraft, Segment } from "@/lib/schema";
 import { getStyleForClip } from "@/lib/motionConstants";
 import * as THREE from "three";
 
-function Dancer({ activeClip }: { activeClip: string }) {
+function KPopDancer({ activeClip }: { activeClip: string }) {
     const group = useRef<THREE.Group>(null);
 
+    // 1. Base model load
+    const { scene } = useGLTF('/models/Ch46_nonPBR (1).glb');
+
+    // 2. Load animation files
+    const { animations: idleAnim } = useGLTF('/models/Happy Idle.glb');
+    const { animations: hiphopAnim } = useGLTF('/models/Hip Hop Dancing.glb');
+    const { animations: armsAnim } = useGLTF('/models/Arms Hip Hop Dance.glb');
+    const { animations: jazzAnim } = useGLTF('/models/Jazz Dancing.glb');
+
+    // 3. Combine animations into one array and map names
+    const allAnimations = React.useMemo(() => {
+        const createAnim = (animArray: THREE.AnimationClip[], newName: string) => {
+            if (!animArray || !animArray[0]) return null;
+            const cloned = animArray[0].clone();
+            cloned.name = newName;
+            return cloned;
+        };
+
+        return [
+            createAnim(idleAnim, 'happy_idle'),
+            createAnim(hiphopAnim, 'hiphop_dance'),
+            createAnim(armsAnim, 'arms_hiphop'),
+            createAnim(jazzAnim, 'jazz_dance')
+        ].filter(Boolean) as THREE.AnimationClip[];
+    }, [idleAnim, hiphopAnim, armsAnim, jazzAnim]);
+
+    const { actions } = useAnimations(allAnimations, group);
+
     useEffect(() => {
-        if (!group.current) return;
-        const style = getStyleForClip(activeClip);
-        const mesh = group.current.children[0] as THREE.Mesh;
-        if (mesh && mesh.material) {
-            const mat = mesh.material as THREE.MeshStandardMaterial;
-            mat.color.set(style.color);
-            mat.emissive.set(style.emissive);
-            group.current.scale.set(1.1, style.scaleY * 1.1, 1.1);
-            setTimeout(() => {
-                group.current?.scale.set(1, style.scaleY, 1);
-            }, 250);
+        if (!actions) return;
+        const action = actions[activeClip];
+        if (action) {
+            action.reset().fadeIn(0.5).play();
         }
-    }, [activeClip]);
+        return () => {
+            if (action) action.fadeOut(0.5);
+        };
+    }, [activeClip, actions]);
 
     return (
-        <group ref={group}>
-            <mesh position={[0, 0.9, 0]} castShadow>
-                <capsuleGeometry args={[0.4, 1, 4, 16]} />
-                <meshStandardMaterial color="#6b21a8" emissive="#3b0764" roughness={0.3} metalness={0.8} />
-            </mesh>
-            <mesh position={[0, 0, 0]} receiveShadow>
+        <group ref={group} dispose={null}>
+            <primitive object={scene} scale={1.2} position={[0, -0.9, 0]} castShadow />
+            {/* Visual indicator for feet/stage mark */}
+            <mesh position={[0, -0.9, 0]} receiveShadow>
                 <circleGeometry args={[0.5, 32]} />
                 <meshStandardMaterial color="#000" transparent opacity={0.5} />
             </mesh>
         </group>
     );
 }
+
+useGLTF.preload('/models/Ch46_nonPBR (1).glb');
+useGLTF.preload('/models/Happy Idle.glb');
+useGLTF.preload('/models/Hip Hop Dancing.glb');
+useGLTF.preload('/models/Arms Hip Hop Dance.glb');
+useGLTF.preload('/models/Jazz Dancing.glb');
 
 export default function ThreeCanvas({
     activeSegment,
@@ -68,9 +99,17 @@ export default function ThreeCanvas({
 
             <Environment preset="night" />
 
-            <Suspense fallback={null}>
+            <Suspense fallback={
+                <Html center>
+                    <div className="flex flex-col items-center justify-center p-4 bg-black/80 rounded border border-fuchsia-500/50 backdrop-blur-md whitespace-nowrap">
+                        <div className="w-8 h-8 border-4 border-fuchsia-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                        <div className="text-xs font-bold tracking-widest text-fuchsia-400 uppercase font-mono">Loading 3D Assets...</div>
+                        <div className="text-[10px] text-fuchsia-400/50 mt-1">~30MB Models</div>
+                    </div>
+                </Html>
+            }>
                 <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-                    <Dancer activeClip={activeClip} />
+                    <KPopDancer activeClip={activeClip} />
                 </Float>
 
                 <ContactShadows

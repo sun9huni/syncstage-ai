@@ -11,13 +11,11 @@ WHAT TO OPTIMIZE FOR
 - Interpretability: segments must align with audible energy changes.
 - Editability: segments should be 1–6 blocks, contiguous, no overlaps.
 
-AUDIO ANALYSIS HEURISTICS (NO hallucinations)
-- Estimate BPM (rough is OK).
-- Detect energy and groove changes: kick/snare density, intensity, drops.
-- Create 1–6 segments and label each segment with:
-  - clipId (from enum)
-  - intensity (1–10)
-  - reason (short)
+# Updated Valid Clip IDs (Use ONLY these):
+- "happy_idle" (Intro, waiting mood)
+- "hiphop_dance" (Main rhythmic verse)
+- "arms_hiphop" (Powerful break, upper body focus)
+- "jazz_dance" (Point choreography, elegant moves)
 
 VISUAL CONCEPT
 Create a concise wardrobe concept avoiding real brand names, real idol names, copyrighted characters. Contains style and imagePrompt.`;
