@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { GoogleGenAI, PersonGeneration } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { getState } from "@/lib/store";
 
 export const maxDuration = 60;
@@ -66,33 +66,34 @@ export async function POST() {
 
     const concept = currentState.draft.visualConcept;
 
-    // --- Attempt Imagen 3 image generation ---
-    const imagePromptFull = `K-pop idol fashion editorial photo, ${concept.imagePrompt} Professional studio lighting, 8k, magazine quality, full body shot, 3:4 portrait.`;
+    // --- Attempt Imagen 4 image generation ---
+    // Use fashion editorial / concept art framing to avoid safety blocks
+    const imagePromptFull = `K-pop fashion editorial concept art, ${concept.imagePrompt} Professional studio lighting, fashion magazine quality, 3:4 portrait, vibrant stage aesthetic.`;
 
     try {
         const response = await ai.models.generateImages({
-            model: "imagen-3.0-generate-002",
+            model: "imagen-4.0-generate-001",
             prompt: imagePromptFull,
             config: {
                 numberOfImages: 1,
                 aspectRatio: "3:4",
-                personGeneration: PersonGeneration.ALLOW_ADULT,
             },
         });
 
-        const base64 = response.generatedImages?.[0]?.image?.imageBytes;
-        if (base64) {
-            const dataUrl = `data:image/png;base64,${base64}`;
+        const imageBytes = response.generatedImages?.[0]?.image?.imageBytes;
+        if (imageBytes) {
+            // imageBytes is a base64 string from the SDK
+            const dataUrl = `data:image/png;base64,${imageBytes}`;
             return NextResponse.json({
                 success: true,
                 imageUrl: dataUrl,
                 description: `${concept.style} — ${concept.imagePrompt.substring(0, 100)}`,
-                source: "imagen-3",
+                source: "imagen-4",
                 style: concept.style,
             });
         }
     } catch (imgErr: unknown) {
-        console.warn("Imagen 3 generation failed, using fallback:", (imgErr as Error).message);
+        console.warn("Imagen 4 generation failed, using fallback:", (imgErr as Error).message);
     }
 
     // --- Fallback: Unsplash (random from pool) + Gemini text description ---
@@ -100,7 +101,7 @@ export async function POST() {
     let description = `${concept.style} — ${concept.imagePrompt.substring(0, 80)}...`;
     try {
         const textResp = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             contents: `Write one vivid sentence describing this K-pop stage concept for a wardrobe mood board: "${concept.style}, ${concept.imagePrompt.substring(0, 120)}"`,
         });
         description = textResp.text || description;

@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const chatArgs: any = {
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             config: {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 tools: tools as any,

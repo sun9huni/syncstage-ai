@@ -239,13 +239,13 @@ export default function Home() {
                 Upload Your Demo Track
               </h2>
               <p className="text-neutral-400 text-sm leading-relaxed">
-                K-pop 데모 음원을 업로드하면 Gemini 2.0 Flash가<br />
+                K-pop 데모 음원을 업로드하면 Gemini 2.5 Flash가<br />
                 네이티브 오디오 딥리스닝으로 곡의 텐션과 전개를 분석합니다.
               </p>
               <div className="flex justify-center gap-2 pt-2">
-                <span className="text-[9px] px-2 py-1 bg-blue-900/40 border border-blue-700/30 text-blue-300 rounded-full font-mono">Gemini 2.0 Flash</span>
+                <span className="text-[9px] px-2 py-1 bg-blue-900/40 border border-blue-700/30 text-blue-300 rounded-full font-mono">Gemini 2.5 Flash</span>
                 <span className="text-[9px] px-2 py-1 bg-violet-900/40 border border-violet-700/30 text-violet-300 rounded-full font-mono">Function Calling</span>
-                <span className="text-[9px] px-2 py-1 bg-fuchsia-900/40 border border-fuchsia-700/30 text-fuchsia-300 rounded-full font-mono">Imagen 3</span>
+                <span className="text-[9px] px-2 py-1 bg-fuchsia-900/40 border border-fuchsia-700/30 text-fuchsia-300 rounded-full font-mono">Imagen 4</span>
               </div>
             </div>
             <div className="flex flex-col gap-3 items-center">
@@ -283,7 +283,7 @@ export default function Home() {
             className="px-8 py-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg shadow-violet-900/40 flex items-center gap-2"
           >
             <span className="text-lg">🔍</span>
-            Analyze with Gemini 2.0 Flash
+            Analyze with Gemini 2.5 Flash
           </button>
         </main>
       )}
@@ -321,7 +321,7 @@ export default function Home() {
               <span className="text-lg">📊</span>
               <div>
                 <h3 className="text-sm font-bold text-white">Gemini Audio Analysis Report</h3>
-                <p className="text-[10px] text-neutral-400 font-mono">gemini-2.0-flash • native multimodal inference</p>
+                <p className="text-[10px] text-neutral-400 font-mono">gemini-2.5-flash • native multimodal inference</p>
               </div>
             </div>
 
