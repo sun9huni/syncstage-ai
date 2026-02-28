@@ -132,6 +132,43 @@ Apply the necessary changes using the tools provided.
 
     } catch (error: any) {
         console.error("Patch API Error:", error);
+
+        // Graceful degradation: if Gemini is unavailable, apply a rule-based fallback patch
+        try {
+            const currentState = getState();
+            if (currentState.draft) {
+                const { instruction } = await req.clone().json().catch(() => ({ instruction: "" }));
+                const fallbackDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
+                const instLower = (instruction || "").toLowerCase();
+
+                // Simple keyword-based fallback rules
+                if (instLower.includes("intense") || instLower.includes("powerful") || instLower.includes("강하") || instLower.includes("강렬")) {
+                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.min(10, s.intensity + 2) }));
+                } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
+                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
+                } else if (instLower.includes("hip") || instLower.includes("groove") || instLower.includes("힙합")) {
+                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_groove" as any }));
+                } else if (instLower.includes("pop") || instLower.includes("팝핀")) {
+                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "poppin_heavy" as any }));
+                } else if (instLower.includes("cyber") || instLower.includes("dark") || instLower.includes("어둡") || instLower.includes("사이버")) {
+                    fallbackDraft.visualConcept = { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and chrome neon accents on a dark futuristic stage with laser beams, 8k cinematic." };
+                } else {
+                    // Generic: boost all intensities slightly as "change"
+                    fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "y2k_point" as any, intensity: 8 };
+                }
+
+                fallbackDraft.revision += 1;
+                fallbackDraft.lastAction = instruction;
+                updateDraft(fallbackDraft, `[Fallback] ${instruction}`, { fallback: true });
+
+                return NextResponse.json({
+                    success: true,
+                    draft: fallbackDraft,
+                    message: `[Demo Mode] Applied pattern-based patch. (${error.message})`,
+                });
+            }
+        } catch (_) {}
+
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

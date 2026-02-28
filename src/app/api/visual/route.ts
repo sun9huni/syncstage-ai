@@ -19,11 +19,17 @@ export async function POST(req: Request) {
         // For the hackathon demo, we use Gemini to "refine" the prompt and return a high-quality placeholder.
         const prompt = getVisualPrompt(concept.style, concept.imagePrompt);
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: prompt,
-        });
-        const description = response.text || "A stunning K-pop stage visual.";
+        let description = `${concept.style} — ${concept.imagePrompt.substring(0, 80)}...`;
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.0-flash",
+                contents: prompt,
+            });
+            description = response.text || description;
+        } catch (aiErr: any) {
+            // Graceful degradation: use concept text if Gemini is unavailable
+            console.warn("Gemini visual generation skipped:", aiErr.message);
+        }
 
         // Style-based image mapping for demo variety
         const styleImageMap: Record<string, string> = {

@@ -105,6 +105,22 @@ export default function Home() {
     }
   };
 
+  // Demo-safe mock patch: instant visual change without API call
+  const DEMO_PATCHES = [
+    { label: "더 파워풀하게", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "더 파워풀하게", segments: d.segments.map((s, i) => i === 2 ? { ...s, clipId: "poppin_heavy" as const, intensity: 10, reason: "Maximum energy drop — crowd ignition moment." } : s) }) },
+    { label: "힙합 무드로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "힙합 무드로", segments: d.segments.map(s => ({ ...s, clipId: "hiphop_groove" as const, intensity: Math.min(10, s.intensity + 1) })) }) },
+    { label: "사이버펑크 스타일", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "사이버펑크 스타일", visualConcept: { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and neon chrome on a dark laser stage, cinematic 8k." } }) },
+    { label: "Y2K 포인트로", fn: (d: SyncStageDraft): SyncStageDraft => ({ ...d, revision: d.revision + 1, lastAction: "Y2K 포인트로", segments: d.segments.map((s, i) => i === 4 ? { ...s, clipId: "y2k_point" as const, intensity: 9, reason: "Iconic Y2K finale — signature point move." } : s) }) },
+  ];
+
+  const handleMockPatch = (patch: typeof DEMO_PATCHES[0]) => {
+    if (!draft) return;
+    const updated = patch.fn(draft);
+    setDraft(updated);
+    setHistory(prev => [...prev, { timestamp: new Date().toISOString(), description: `[Demo] ${patch.label}` }]);
+    setImageUrl(null);
+  };
+
   // Find current active segment based on currentTimeMs
   const activeSegment = draft?.segments?.find(
     (s) => currentTimeMs >= s.startMs && currentTimeMs < s.endMs
@@ -262,6 +278,20 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            {/* Quick Demo Patches */}
+            {draft && (
+              <div className="px-3 pb-2 bg-neutral-900 border-t border-neutral-800 pt-2 flex flex-wrap gap-1">
+                {DEMO_PATCHES.map((p) => (
+                  <button
+                    key={p.label}
+                    onClick={() => handleMockPatch(p)}
+                    className="px-2 py-1 bg-indigo-900/60 hover:bg-indigo-800 text-indigo-300 border border-indigo-700/50 rounded text-[10px] transition-colors"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="p-3 bg-neutral-900 border-t border-black flex gap-2">
               <input
                 type="text"

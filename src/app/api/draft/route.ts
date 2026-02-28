@@ -54,7 +54,12 @@ export async function POST(req: Request) {
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: [
-                uploadResult,
+                {
+                    fileData: {
+                        mimeType: uploadResult.mimeType || "audio/mp3",
+                        fileUri: uploadResult.uri,
+                    }
+                },
                 "Analyze this audio track and generate the SyncStageDraft JSON.",
             ],
             config: {
