@@ -66,36 +66,39 @@ export async function POST() {
 
     const concept = currentState.draft.visualConcept;
 
-    // --- Attempt Imagen 4 image generation ---
-    // Use fashion editorial / concept art framing to avoid safety blocks
+    // --- Attempt image generation with gemini-2.0-flash-exp-image-generation (free tier) ---
+    // Imagen 3/4 requires paid plan; this model works on free tier
     const imagePromptFull = `K-pop fashion editorial concept art, ${concept.imagePrompt} Professional studio lighting, fashion magazine quality, 3:4 portrait, vibrant stage aesthetic.`;
     let imagenError: string | null = null;
 
     try {
-        const response = await ai.models.generateImages({
-            model: "imagen-4.0-generate-001",
-            prompt: imagePromptFull,
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash-exp-image-generation",
+            contents: [{ parts: [{ text: imagePromptFull }] }],
             config: {
-                numberOfImages: 1,
-                aspectRatio: "3:4",
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                responseModalities: ["Text", "Image"] as any,
             },
         });
 
-        const imageBytes = response.generatedImages?.[0]?.image?.imageBytes;
-        if (imageBytes) {
-            // imageBytes is a base64 string from the SDK
-            const dataUrl = `data:image/png;base64,${imageBytes}`;
-            return NextResponse.json({
-                success: true,
-                imageUrl: dataUrl,
-                description: `${concept.style} — ${concept.imagePrompt.substring(0, 100)}`,
-                source: "imagen-4",
-                style: concept.style,
-            });
+        const parts = response.candidates?.[0]?.content?.parts || [];
+        for (const part of parts) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const inlineData = (part as any).inlineData;
+            if (inlineData?.data) {
+                const dataUrl = `data:${inlineData.mimeType || "image/png"};base64,${inlineData.data}`;
+                return NextResponse.json({
+                    success: true,
+                    imageUrl: dataUrl,
+                    description: `${concept.style} — ${concept.imagePrompt.substring(0, 100)}`,
+                    source: "gemini-imagen",
+                    style: concept.style,
+                });
+            }
         }
     } catch (imgErr: unknown) {
         const imgErrMsg = (imgErr instanceof Error ? imgErr.message : String(imgErr));
-        console.warn("Imagen 4 generation failed:", imgErrMsg);
+        console.warn("Gemini image generation failed:", imgErrMsg);
         imagenError = imgErrMsg;
     }
 

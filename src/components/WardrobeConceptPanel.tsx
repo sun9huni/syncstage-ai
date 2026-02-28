@@ -12,6 +12,12 @@ interface WardrobeConceptPanelProps {
 }
 
 const SOURCE_CONFIG: Record<string, { label: string; gradient: string; text: string; dot: string }> = {
+    "gemini-imagen": {
+        label: "✦ Gemini Image",
+        gradient: "from-blue-600 to-violet-600",
+        text: "text-violet-200",
+        dot: "bg-violet-400",
+    },
     "imagen-4": {
         label: "✦ Imagen 4",
         gradient: "from-blue-600 to-violet-600",
