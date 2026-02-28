@@ -62,7 +62,21 @@ export async function POST(req: Request) {
                         fileUri: uploadResult.uri,
                     }
                 },
-                "Analyze this audio track and generate the SyncStageDraft JSON.",
+                {
+                    text: `Listen deeply to this audio track using your native multimodal audio understanding.
+
+1. FEEL the drum beats, bass lines, and energy arcs from start to finish.
+2. FIND the exact millisecond timestamps where the energy shifts — especially the Beat Drop moment(s).
+3. BUILD a choreography timeline (segments) that maps each section's energy to the correct dance move:
+   - Calm intro → happy_idle
+   - Groove verse → hiphop_dance  
+   - Beat drop / maximum energy → arms_hiphop (intensity 9–10)
+   - Point choreography / elegant section → jazz_dance
+4. DERIVE the stage wardrobe concept from the audio's character and vibe.
+5. WRITE specific reasons that describe exactly what you heard in each segment.
+
+Return the SyncStageDraft JSON. Make it feel like a real K-pop production director made it.`
+                }
             ],
             config: {
                 systemInstruction: systemInstruction,
