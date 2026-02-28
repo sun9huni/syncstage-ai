@@ -233,7 +233,7 @@ export default function Home() {
       {phase === 0 && (
         <main className="flex-1 flex items-center justify-center p-8">
           <div className="max-w-lg w-full text-center space-y-8">
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div className="text-5xl mb-4">🎵</div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
                 Upload Your Demo Track
@@ -242,6 +242,11 @@ export default function Home() {
                 K-pop 데모 음원을 업로드하면 Gemini 2.0 Flash가<br />
                 네이티브 오디오 딥리스닝으로 곡의 텐션과 전개를 분석합니다.
               </p>
+              <div className="flex justify-center gap-2 pt-2">
+                <span className="text-[9px] px-2 py-1 bg-blue-900/40 border border-blue-700/30 text-blue-300 rounded-full font-mono">Gemini 2.0 Flash</span>
+                <span className="text-[9px] px-2 py-1 bg-violet-900/40 border border-violet-700/30 text-violet-300 rounded-full font-mono">Function Calling</span>
+                <span className="text-[9px] px-2 py-1 bg-fuchsia-900/40 border border-fuchsia-700/30 text-fuchsia-300 rounded-full font-mono">Imagen 3</span>
+              </div>
             </div>
             <div className="flex flex-col gap-3 items-center">
               <label className="cursor-pointer bg-gradient-to-r from-fuchsia-600 to-violet-600 hover:from-fuchsia-500 hover:to-violet-500 text-white px-8 py-3 rounded-full text-sm font-bold tracking-wide transition-all shadow-lg shadow-fuchsia-900/40">
