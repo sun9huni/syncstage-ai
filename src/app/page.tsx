@@ -59,7 +59,7 @@ export default function Home() {
       const stateRes = await fetch("/api/state");
       const stateData = await stateRes.json();
       setHistory(stateData.diffHistory || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(`Upload failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -79,7 +79,7 @@ export default function Home() {
         setImageUrl(null);
         setHistory([{ timestamp: new Date().toISOString(), description: "Demo preset loaded." }]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(`Preset failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -107,7 +107,7 @@ export default function Home() {
         const stateData = await stateRes.json();
         setHistory(stateData.diffHistory || []);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(`Patch failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -126,7 +126,7 @@ export default function Home() {
         setImageSource(data.source || null);
         setImageDescription(data.description || null);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(`Visual failed: ${err.message}`);
     } finally {
       setImageLoading(false);

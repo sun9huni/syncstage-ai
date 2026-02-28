@@ -19,3 +19,27 @@ SyncStage AI는 **Function Calling을 "데이터베이스 Mutator"** 로 사용�
 ## 4. Antigravity와 에이전트 주도 개발
 이 프로젝트는 철저히 **에이전트와의 페어 프로그래밍**을 위해 설계되었습니다.
 초기 프롬프트부터 `AGENTS.md`를 기둥으로 삼아 AI가 레포지토리를 직접 읽고 설계할 수 있게 도왔으며, 하드코딩된 프롬프트를 `src/lib/prompts.ts`로 분리하여 **"사람은 테스트하고, AI는 코딩하는"** 이상적인 해커톤 파이프라인을 구축했습니다.
+
+---
+
+# 🚀 SyncStage AI: Google Innovation Use Case (Gemini / Antigravity)
+
+This project is an optimal example of how Google's generative AI technologies and agent tools have been elevated to a production-level application.
+
+## 1. Convergence of Models and Technology
+* **Gemini 2.0 Flash:** Leveraging overwhelming speed and cost-effectiveness as weapons, it maximized user experience by minimizing delays for frequently occurring "A&R Chat (Patch)" and "Visual Summary (Visual)" requests.
+* **Structured Output:** Forced Zod Schema structured output during the audio analysis phase (`/api/draft`), reducing the frontend JSON parse error rate to 0%.
+
+## 2. Reinterpretation of Tool Calling (Function Calling): "Intent-Based Patching"
+Most AI services commit the error of overwriting the entire text or entire state.
+SyncStage AI used **Function Calling as a "Database Mutator."**
+* When a user naturally instructs "make the chorus stronger," Gemini calls the `update_segment(id: "seg_02", intensity: 10)` function.
+* This allows for free AI collaboration while perfectly maintaining the **integrity (idempotency) of existing data.**
+
+## 3. Revision Control Structure
+To overcome the limitations of a hackathon demo environment where errors and conflicts are rampant, a `Revision` number was assigned to every timeline state.
+* By introducing an architecture that throws HTTP 409 upon state conflicts and handles them on the client, it proved the app's **guardrails and survival (Rugged Constitution).**
+
+## 4. Antigravity and Agent-Driven Development
+This project was designed thoroughly for **pair programming with agents.**
+Starting from the initial prompts, `AGENTS.md` was used as a pillar to help the AI directly read and design the repository. Hardcoded prompts were separated into `src/lib/prompts.ts`, establishing an ideal hackathon pipeline where **"humans test, and AI codes."**

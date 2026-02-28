@@ -8,7 +8,20 @@
 ---
 
 ## 🏗️ 2. Architecture & Workflow
-![SyncStage AI Architecture](./public/architecture-placeholder.png)
+
+```mermaid
+graph TD
+    User([🎵 User Uploads Audio]) --> DraftAPI(API: /api/draft)
+    DraftAPI -->|Google Gemini 3.1 Pro| Analysis[Multimodal Audio Analysis\nExtracts Drops & Tension]
+    Analysis -->|Generates JSON| Timeline[Structured Choreo Timeline State]
+    Timeline --> UI[Real-time 3D React Three Fiber Rendering]
+    UI --> VisualAPI(API: /api/visual)
+    VisualAPI -->|Nano Banana 2| StageImage[Generates K-Pop Stage Visual Image]
+    
+    UserFeedback([💬 User NLP Feedback]) --> PatchAPI(API: /api/patch)
+    PatchAPI -->|Function Calling| PatchEngine[Agentic Patch Engine\nupdate_segment, update_style]
+    PatchEngine -->|Mutates State safely| Timeline
+```
 
 1. **Audio Deep Listening:** 사용자가 오디오 파일(.wav, .mp3)을 업로드합니다.
 2. **Multimodal Inference:** Gemini가 오디오의 웨이브폼, 드럼 킥, 베이스 라인 등 에너지 변화를 네이티브하게 분석하여 초안 `Choreo JSON` 타임라인을 구성합니다.
@@ -50,3 +63,58 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000)
 
 *(프로젝트의 데모 버전은 상단 `[⚡️ LOAD DEMO PRESET]` 버튼을 통해 API 키 없이도 즉각적인 UI/UX 체험이 가능합니다.)*
+
+---
+
+# ⚡️ SyncStage AI
+
+> **"K-Pop A&R Director completed with Audio Multimodal Inference and JSON-based Timeline Patching"**
+
+## 📖 1. Product Overview
+**SyncStage AI** is an **A&R Directing Agent** that, when a user uploads a demo audio source, identifies the song's progression and tension through Gemini's core multimodal audio analysis capabilities. It then automatically generates and manages revisions for 3D choreography timelines and stage costume concepts accordingly.
+
+---
+
+## 🏗️ 2. Architecture & Workflow
+![SyncStage AI Architecture](./public/architecture-placeholder.png)
+
+1. **Audio Deep Listening:** User uploads audio files (.wav, .mp3).
+2. **Multimodal Inference:** Gemini natively analyzes energy changes such as audio waveforms, drum kicks, and bass lines to compose an initial `Choreo JSON` timeline.
+3. **Intent-Based Patching:** Feedbacks like "make it more powerful" or "go with a cyberpunk mood" are interpreted by the agent through Function Calling to safely patch the state.
+4. **Real-time 3D Rendering & Visuals:** An R3F-based 3D dancer avatar dances on the browser according to the timeline, and stage costume images are generated in real-time based on the completed concept.
+
+---
+
+## ⚠️ 3. Original Contribution (**Important**)
+
+> **Judge's Note (Notice to avoid DQ)**
+> The **3D avatar models and animation files rendered within the program utilize open-source assets from Mixamo**.
+> However, our team's **original contribution and core technical prowess lie in the 100% direct planning and implementation of the 'Director Agent Engine'**. This engine analyzes song tension through Gemini's native audio multimodal inference, automatically orchestrates JSON-based timelines based on this analysis, and controls states through natural language Function Calling.
+
+---
+
+## 🛠️ 4. Key Google Technologies Used (Tech Stack)
+
+| Category | Technology Used | Implementation Content and Role |
+|---|---|---|
+| **Audio Deep Listening** | **Gemini 3.1 Pro (Multimodal)** | Utilizes the model's native audio understanding to analyze drum kicks, verses, and beat drop timestamps directly from the source without a separate audio preprocessing pipeline, and splits the timeline accordingly. |
+| **Agentic Function Calling** | **Gemini SDK (Structured Output)** | Converts user text feedback into fixed function tools (Tools) and JSON objects like `update_segment` and `update_style` to control the 3D app's state without side effects. |
+| **Stage Visual Generation** | **Nano Banana 2 (Imagen)** | Visualizes high-resolution magazine-quality K-Pop stage costume concepts based on English text prompts derived from audio mood analysis. |
+
+---
+
+## 🚀 5. How to Run
+
+```bash
+# Install dependencies
+npm install
+
+# Set your Gemini API key
+echo "GEMINI_API_KEY=your_key_here" > .env.local
+
+# Run dev server
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000)
+
+*(The demo version of the project allows for immediate UI/UX experience without an API key through the `[⚡️ LOAD DEMO PRESET]` button at the top.)*
