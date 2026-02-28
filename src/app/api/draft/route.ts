@@ -116,30 +116,54 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
     } catch (error: unknown) {
         console.error("Draft API Error (Quota exceeded or timeout) - Triggering Golden Path Fallback:", error);
 
-        // Golden Path Fallback
+        // Golden Path Fallback — 5 rich segments matching 15s demo audio
         const fallbackDraft = {
             revision: 0,
             segments: [
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 0.0,
-                    endMs: 5000.0,
+                    startMs: 0,
+                    endMs: 3000,
                     clipId: "happy_idle",
                     intensity: 3,
-                    reason: "Vocal build-up 'Dance floor, then battle' before the beat drops."
+                    reason: "Sparse hi-hat intro with vocal build-up — establishing anticipation before the drop."
                 },
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 5000.0,
-                    endMs: 15000.0,
+                    startMs: 3000,
+                    endMs: 6500,
+                    clipId: "hiphop_dance",
+                    intensity: 6,
+                    reason: "Four-on-the-floor kick drum locks in — syncopated groove drives the verse momentum."
+                },
+                {
+                    id: "seg_" + nanoid(8),
+                    startMs: 6500,
+                    endMs: 10000,
+                    clipId: "arms_hiphop",
+                    intensity: 10,
+                    reason: "BEAT DROP at 6.5s — heavy bass explosion with full band, maximum power move."
+                },
+                {
+                    id: "seg_" + nanoid(8),
+                    startMs: 10000,
+                    endMs: 13000,
+                    clipId: "jazz_dance",
+                    intensity: 7,
+                    reason: "Melodic bridge — emotional highlight with fluid point choreography."
+                },
+                {
+                    id: "seg_" + nanoid(8),
+                    startMs: 13000,
+                    endMs: 15000,
                     clipId: "arms_hiphop",
                     intensity: 9,
-                    reason: "Heavy bass and beat drop starting at 'We step on stage'."
+                    reason: "FINALE — explosive ending pose with signature freeze frame."
                 }
             ],
             visualConcept: {
-                style: "Cyberpunk Girl Crush",
-                imagePrompt: "K-pop idol stage outfit, cyberpunk techwear, dark lighting with neon accents, dynamic stage presence, 8k resolution."
+                style: "Cyberpunk Streetwear",
+                imagePrompt: "Five K-pop idols in iridescent holographic jackets, chrome accessories, neon-lit rain-slicked stage, dramatic fog machines, 8k cinematic wide shot."
             }
         };
 
