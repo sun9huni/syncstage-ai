@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import WaveformTimeline from "@/components/WaveformTimeline";
 import ThreeCanvas from "@/components/ThreeCanvas";
+import SegmentList from "@/components/SegmentList";
 import { SyncStageDraft } from "@/lib/schema";
 
 export default function Home() {
@@ -178,12 +179,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Panel 3: Split between Concept Image & Chat Patch */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Panel 3: Visual Concept / Segment List / A&R Chat */}
+        <div className="grid grid-cols-3 gap-4">
           {/* Visual Concept */}
           <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">
             <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold flex justify-between items-center">
-              <span className="text-neutral-400">Stage Wardrobe Concept</span>
+              <span className="text-neutral-400">Stage Wardrobe</span>
               {draft?.visualConcept && (
                 <span className="text-[10px] text-fuchsia-400 px-2 py-0.5 bg-fuchsia-500/10 rounded border border-fuchsia-500/20">
                   {draft.visualConcept.style}
@@ -229,7 +230,25 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Chat Box */}
+          {/* Segment List */}
+          <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">
+            <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold flex justify-between items-center">
+              <span className="text-neutral-400">Choreo Timeline</span>
+              {draft && (
+                <span className="text-[10px] text-indigo-400 font-mono">
+                  {draft.segments.length} segments
+                </span>
+              )}
+            </div>
+            <div className="flex-1 p-3 overflow-y-auto">
+              <SegmentList
+                segments={draft?.segments || []}
+                activeSegmentId={activeSegment?.id}
+              />
+            </div>
+          </div>
+
+          {/* A&R Chat Box */}
           <div className="bg-neutral-800 rounded-lg overflow-hidden shadow-xl flex flex-col border border-neutral-700">
             <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold text-neutral-400">
               A&R Director's Notes

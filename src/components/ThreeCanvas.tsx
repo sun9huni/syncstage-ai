@@ -12,6 +12,7 @@ import {
     Float
 } from "@react-three/drei";
 import { SyncStageDraft, Segment } from "@/lib/schema";
+import { getStyleForClip } from "@/lib/motionConstants";
 import * as THREE from "three";
 
 function Dancer({ activeClip }: { activeClip: string }) {
@@ -22,17 +23,9 @@ function Dancer({ activeClip }: { activeClip: string }) {
     // const { scene, animations } = useGLTF("/models/dancer_all_clips.glb");
     // const { actions } = useAnimations(animations, group);
 
-    const clipStyles: Record<string, { color: string; emissive: string; scaleY: number }> = {
-        idle_bounce:   { color: "#6b21a8", emissive: "#3b0764", scaleY: 1.0 },
-        hiphop_groove: { color: "#1d4ed8", emissive: "#1e3a8a", scaleY: 1.05 },
-        poppin_heavy:  { color: "#d946ef", emissive: "#a21caf", scaleY: 1.15 },
-        wave_fluid:    { color: "#0891b2", emissive: "#164e63", scaleY: 0.95 },
-        y2k_point:     { color: "#f59e0b", emissive: "#92400e", scaleY: 1.1 },
-    };
-
     useEffect(() => {
         if (!group.current) return;
-        const style = clipStyles[activeClip] || clipStyles.idle_bounce;
+        const style = getStyleForClip(activeClip);
         const mesh = group.current.children[0] as THREE.Mesh;
         if (mesh && mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
@@ -77,6 +70,7 @@ export default function ThreeCanvas({
     draft: SyncStageDraft | null;
 }) {
     const activeClip = activeSegment?.clipId || "idle_bounce";
+    const activeStyle = getStyleForClip(activeClip);
 
     return (
         <Canvas
@@ -120,10 +114,10 @@ export default function ThreeCanvas({
                 <Text
                     position={[0, 2.8, -1]}
                     fontSize={0.4}
-                    color="#d946ef"
+                    color={activeStyle.color}
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/Geist-Bold.ttf" // Use a system font or local if available
+                    font="/fonts/Geist-Bold.ttf"
                 >
                     {activeSegment.clipId.toUpperCase()}
                 </Text>
