@@ -17,39 +17,39 @@ const initialDraft: SyncStageDraft = {
         {
             id: "seg_01",
             startMs: 0,
-            endMs: 3000,
+            endMs: 5000,
             clipId: "happy_idle",
             intensity: 3,
             reason: "Intro — sparse hi-hat builds anticipation before the first drop."
         },
         {
             id: "seg_02",
-            startMs: 3000,
-            endMs: 6500,
+            startMs: 5000,
+            endMs: 12000,
             clipId: "hiphop_dance",
             intensity: 6,
             reason: "Verse groove — syncopated kick + snare pattern locks the rhythm in."
         },
         {
             id: "seg_03",
-            startMs: 6500,
-            endMs: 10000,
+            startMs: 12000,
+            endMs: 20000,
             clipId: "arms_hiphop",
             intensity: 10,
             reason: "BEAT DROP — full bass explosion, maximum power arms, crowd ignition."
         },
         {
             id: "seg_04",
-            startMs: 10000,
-            endMs: 13000,
+            startMs: 20000,
+            endMs: 26000,
             clipId: "jazz_dance",
             intensity: 7,
             reason: "Point choreo — melodic highlight with precise, elegant signature move."
         },
         {
             id: "seg_05",
-            startMs: 13000,
-            endMs: 15000,
+            startMs: 26000,
+            endMs: 30000,
             clipId: "arms_hiphop",
             intensity: 9,
             reason: "FINALE — explosive ending pose, freeze frame, curtain call."

@@ -84,10 +84,18 @@ The JSON must follow this EXACT structure:
 }
 
 Rules:
-- Create 4-6 segments covering the full audio duration
-- Map energy levels: low intro → happy_idle, groove → hiphop_dance, beat drop → arms_hiphop (intensity 9-10), elegant → jazz_dance
-- All timestamps must be integers in milliseconds
+- You MUST create EXACTLY 5 segments. No more, no fewer.
+- Cover the FULL audio duration from 0ms to the very end.
+- Suggested structure for a ~30s track:
+  Segment 1: intro (0~5000ms) → happy_idle, intensity 2-4
+  Segment 2: verse build (5000~12000ms) → hiphop_dance, intensity 5-7
+  Segment 3: beat drop / chorus (12000~20000ms) → arms_hiphop, intensity 9-10
+  Segment 4: bridge / point choreo (20000~26000ms) → jazz_dance, intensity 6-8
+  Segment 5: finale (26000~end) → arms_hiphop, intensity 8-10
+- Adjust exact boundaries based on what you actually HEAR in the audio.
+- clipId must be one of: happy_idle | hiphop_dance | arms_hiphop | jazz_dance
 - intensity must be an integer 1-10
+- All timestamps must be integers in milliseconds
 - Derive visualConcept from the audio's emotional vibe and genre
 
 Return ONLY the JSON object. No other text.`
@@ -120,10 +128,10 @@ Return ONLY the JSON object. No other text.`
                 reason: String(seg.reason ?? "").substring(0, 140),
             }));
 
-            // Clamp timestamps to audio duration (15000ms max).
-            // Gemini sometimes returns timestamps in wrong scale (e.g. 270000ms for a 15s track).
+            // Clamp timestamps to audio duration (30000ms max).
+            // Gemini sometimes returns timestamps in wrong scale.
             const maxEndMs = Math.max(...segments.map((s: { endMs: number }) => s.endMs));
-            const AUDIO_DURATION_MS = 15000;
+            const AUDIO_DURATION_MS = 30000;
             if (maxEndMs > AUDIO_DURATION_MS) {
                 const scale = AUDIO_DURATION_MS / maxEndMs;
                 segments = segments.map((s: { startMs: number; endMs: number;[key: string]: unknown }) => ({
@@ -147,46 +155,46 @@ Return ONLY the JSON object. No other text.`
         const errMsg = error instanceof Error ? error.message : String(error);
         console.error("[DRAFT FALLBACK TRIGGERED] Error:", errMsg);
 
-        // Golden Path Fallback — 5 rich segments matching 15s demo audio
+        // Golden Path Fallback — 5 rich segments matching 30s demo audio
         const fallbackDraft = {
             revision: 0,
             segments: [
                 {
                     id: "seg_" + nanoid(8),
                     startMs: 0,
-                    endMs: 3000,
+                    endMs: 5000,
                     clipId: "happy_idle",
                     intensity: 3,
                     reason: "Sparse hi-hat intro with vocal build-up — establishing anticipation before the drop."
                 },
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 3000,
-                    endMs: 6500,
+                    startMs: 5000,
+                    endMs: 12000,
                     clipId: "hiphop_dance",
                     intensity: 6,
                     reason: "Four-on-the-floor kick drum locks in — syncopated groove drives the verse momentum."
                 },
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 6500,
-                    endMs: 10000,
+                    startMs: 12000,
+                    endMs: 20000,
                     clipId: "arms_hiphop",
                     intensity: 10,
-                    reason: "BEAT DROP at 6.5s — heavy bass explosion with full band, maximum power move."
+                    reason: "BEAT DROP — heavy bass explosion with full band, maximum power move, crowd ignition."
                 },
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 10000,
-                    endMs: 13000,
+                    startMs: 20000,
+                    endMs: 26000,
                     clipId: "jazz_dance",
                     intensity: 7,
                     reason: "Melodic bridge — emotional highlight with fluid point choreography."
                 },
                 {
                     id: "seg_" + nanoid(8),
-                    startMs: 13000,
-                    endMs: 15000,
+                    startMs: 26000,
+                    endMs: 30000,
                     clipId: "arms_hiphop",
                     intensity: 9,
                     reason: "FINALE — explosive ending pose with signature freeze frame."

@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   const handleLoadDemoTrack = () => {
-    setAudioUrl("/musics/demo_kpop_15s.mp3");
+    setAudioUrl("/musics/demo_kpop_30s.mp3");
     setPhase(1);
   };
 
@@ -77,7 +77,7 @@ export default function Home() {
     try {
       // Attempt real Gemini analysis via draft API with the demo mp3
       const formData = new FormData();
-      const audioRes = await fetch("/musics/demo_kpop_15s.mp3");
+      const audioRes = await fetch("/musics/demo_kpop_30s.mp3");
       const blob = await audioRes.blob();
       formData.append("file", new File([blob], "demo.mp3", { type: "audio/mp3" }));
 
