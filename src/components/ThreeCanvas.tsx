@@ -22,21 +22,26 @@ function Dancer({ activeClip }: { activeClip: string }) {
     // const { scene, animations } = useGLTF("/models/dancer_all_clips.glb");
     // const { actions } = useAnimations(animations, group);
 
-    // Placeholder logic: Just a simple animation effect on a Capsule
+    const clipStyles: Record<string, { color: string; emissive: string; scaleY: number }> = {
+        idle_bounce:   { color: "#6b21a8", emissive: "#3b0764", scaleY: 1.0 },
+        hiphop_groove: { color: "#1d4ed8", emissive: "#1e3a8a", scaleY: 1.05 },
+        poppin_heavy:  { color: "#d946ef", emissive: "#a21caf", scaleY: 1.15 },
+        wave_fluid:    { color: "#0891b2", emissive: "#164e63", scaleY: 0.95 },
+        y2k_point:     { color: "#f59e0b", emissive: "#92400e", scaleY: 1.1 },
+    };
+
     useEffect(() => {
         if (!group.current) return;
-        
-        // Simulate a "Crossfade" visual effect
+        const style = clipStyles[activeClip] || clipStyles.idle_bounce;
         const mesh = group.current.children[0] as THREE.Mesh;
         if (mesh && mesh.material) {
             const mat = mesh.material as THREE.MeshStandardMaterial;
-            mat.color.set(activeClip === 'idle_bounce' ? "#6b21a8" : "#d946ef");
-            
-            // Pulse effect when changing
-            group.current.scale.set(1.1, 1.1, 1.1);
+            mat.color.set(style.color);
+            mat.emissive.set(style.emissive);
+            group.current.scale.set(1.1, style.scaleY * 1.1, 1.1);
             setTimeout(() => {
-                group.current?.scale.set(1, 1, 1);
-            }, 200);
+                group.current?.scale.set(1, style.scaleY, 1);
+            }, 250);
         }
 
         /* 
@@ -53,7 +58,7 @@ function Dancer({ activeClip }: { activeClip: string }) {
         <group ref={group}>
             <mesh position={[0, 0.9, 0]} castShadow>
                 <capsuleGeometry args={[0.4, 1, 4, 16]} />
-                <meshStandardMaterial color="#6b21a8" roughness={0.3} metalness={0.8} />
+                <meshStandardMaterial color="#6b21a8" emissive="#3b0764" roughness={0.3} metalness={0.8} />
             </mesh>
             {/* Visual indicator for feet */}
             <mesh position={[0, 0, 0]} receiveShadow>

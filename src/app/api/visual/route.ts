@@ -25,9 +25,24 @@ export async function POST(req: Request) {
         });
         const description = response.text || "A stunning K-pop stage visual.";
 
-        // Mocking the image result for the demo. 
-        // We'll use a high-quality Unsplash image that matches a "Cyberpunk K-pop" or "Stage" vibe.
-        const mockImageUrl = `https://images.unsplash.com/photo-1546707012-c51841079176?q=80&w=1000&auto=format&fit=crop`;
+        // Style-based image mapping for demo variety
+        const styleImageMap: Record<string, string> = {
+            cyberpunk:  "photo-1558618666-fcd25c85cd64",
+            cyber:      "photo-1558618666-fcd25c85cd64",
+            y2k:        "photo-1571019613454-1cb2f99b2d8b",
+            street:     "photo-1571019613454-1cb2f99b2d8b",
+            royal:      "photo-1518611012118-696072aa579a",
+            elegant:    "photo-1518611012118-696072aa579a",
+            futuristic: "photo-1527525443983-6e60c75fff46",
+            dark:       "photo-1527525443983-6e60c75fff46",
+            neon:       "photo-1549298916-b41d501d3772",
+            default:    "photo-1546707012-c51841079176",
+        };
+
+        const styleLower = concept.style.toLowerCase();
+        const matchedKey = Object.keys(styleImageMap).find(k => styleLower.includes(k)) || "default";
+        const photoId = styleImageMap[matchedKey];
+        const mockImageUrl = `https://images.unsplash.com/${photoId}?q=80&w=1000&auto=format&fit=crop`;
 
         return NextResponse.json({
             success: true,

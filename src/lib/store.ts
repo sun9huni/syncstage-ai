@@ -16,24 +16,48 @@ const initialDraft: SyncStageDraft = {
     segments: [
         {
             id: "seg_01",
-            startMs: 0.0,
-            endMs: 5000.0,
+            startMs: 0,
+            endMs: 8000,
             clipId: "idle_bounce",
             intensity: 3,
-            reason: "Intro sequence with light rhythm."
+            reason: "Soft intro — minimal percussion, establishing stage presence."
         },
         {
             id: "seg_02",
-            startMs: 5000.0,
-            endMs: 15000.0,
+            startMs: 8000,
+            endMs: 20000,
+            clipId: "hiphop_groove",
+            intensity: 6,
+            reason: "Pre-chorus builds momentum with syncopated groove."
+        },
+        {
+            id: "seg_03",
+            startMs: 20000,
+            endMs: 34000,
             clipId: "poppin_heavy",
             intensity: 9,
-            reason: "Main hook with high energy beats."
+            reason: "Main hook — full bass drop, maximum energy, crowd moment."
+        },
+        {
+            id: "seg_04",
+            startMs: 34000,
+            endMs: 46000,
+            clipId: "wave_fluid",
+            intensity: 5,
+            reason: "Bridge — melodic interlude with smooth fluid transitions."
+        },
+        {
+            id: "seg_05",
+            startMs: 46000,
+            endMs: 60000,
+            clipId: "y2k_point",
+            intensity: 8,
+            reason: "Final chorus — Y2K signature point move, iconic ending pose."
         }
     ],
     visualConcept: {
-        style: "Y2K Streetwear",
-        imagePrompt: "A group of K-pop idols wearing baggy cargo pants and neon crop tops on a futuristic urban street stage, 8k resolution."
+        style: "Cyberpunk Streetwear",
+        imagePrompt: "Five K-pop performers in iridescent holographic jackets and chrome accessories on a neon-lit rain-slicked stage, dramatic fog, 8k cinematic."
     }
 };
 

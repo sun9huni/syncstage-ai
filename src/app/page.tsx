@@ -153,12 +153,21 @@ export default function Home() {
 
         {/* Panel 2: Waveform & Audio Upload */}
         <div className="bg-neutral-800 rounded-lg overflow-hidden flex flex-col shadow-xl border border-neutral-700">
-          <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold flex justify-between items-center">
+          <div className="p-3 bg-neutral-900 border-b border-black text-[11px] uppercase tracking-widest font-bold flex justify-between items-center gap-2">
             <span className="text-neutral-400">Audio Master Pipeline</span>
-            <label className="cursor-pointer bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-3 py-1 rounded text-[10px] transition-all">
-              UPLOAD WAV/MP3
-              <input type="file" accept="audio/*" onChange={handleFileUpload} className="hidden" />
-            </label>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setAudioUrl("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")}
+                className="bg-neutral-700 hover:bg-neutral-600 text-neutral-300 px-2 py-1 rounded text-[10px] transition-all border border-neutral-600"
+                title="Load demo track"
+              >
+                DEMO TRACK
+              </button>
+              <label className="cursor-pointer bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-3 py-1 rounded text-[10px] transition-all">
+                UPLOAD WAV/MP3
+                <input type="file" accept="audio/*" onChange={handleFileUpload} className="hidden" />
+              </label>
+            </div>
           </div>
           <div className="flex-1 p-6 flex flex-col justify-center">
             <WaveformTimeline
