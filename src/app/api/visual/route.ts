@@ -69,6 +69,7 @@ export async function POST() {
     // --- Attempt Imagen 4 image generation ---
     // Use fashion editorial / concept art framing to avoid safety blocks
     const imagePromptFull = `K-pop fashion editorial concept art, ${concept.imagePrompt} Professional studio lighting, fashion magazine quality, 3:4 portrait, vibrant stage aesthetic.`;
+    let imagenError: string | null = null;
 
     try {
         const response = await ai.models.generateImages({
@@ -93,7 +94,9 @@ export async function POST() {
             });
         }
     } catch (imgErr: unknown) {
-        console.warn("Imagen 4 generation failed, using fallback:", (imgErr as Error).message);
+        const imgErrMsg = (imgErr instanceof Error ? imgErr.message : String(imgErr));
+        console.warn("Imagen 4 generation failed:", imgErrMsg);
+        imagenError = imgErrMsg;
     }
 
     // --- Fallback: Unsplash (random from pool) + Gemini text description ---
@@ -115,5 +118,6 @@ export async function POST() {
         description,
         source: "fallback",
         style: concept.style,
+        _imagenError: imagenError,
     });
 }
