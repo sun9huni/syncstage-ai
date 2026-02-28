@@ -4,7 +4,7 @@ import { getState, updateDraft } from "@/lib/store";
 import { moveTags, SyncStageDraft } from "@/lib/schema";
 // Unused import removed
 
-const apiKey = process.env.GEMINI_API_KEY || "dummy-key-for-build";
+const apiKey = process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
 
 const tools = [{

@@ -4,7 +4,7 @@ import { getState } from "@/lib/store";
 
 export const maxDuration = 60;
 
-const apiKey = process.env.GEMINI_API_KEY || "dummy-key-for-build";
+const apiKey = process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
 
 // Curated high-quality stage/fashion Unsplash photos per style

@@ -10,7 +10,7 @@ import os from "os";
 import { nanoid } from "nanoid";
 import { SYNCSTAGE_SYSTEM_PROMPT } from "@/lib/prompts";
 
-const apiKey = process.env.GEMINI_API_KEY || "dummy-key-for-build";
+const apiKey = process.env.GEMINI_API_KEY2 || process.env.GEMINI_API_KEY || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
 
 export async function POST(req: Request) {
@@ -126,7 +126,7 @@ Return ONLY the JSON object. No other text.`
             const AUDIO_DURATION_MS = 15000;
             if (maxEndMs > AUDIO_DURATION_MS) {
                 const scale = AUDIO_DURATION_MS / maxEndMs;
-                segments = segments.map((s: { startMs: number; endMs: number; [key: string]: unknown }) => ({
+                segments = segments.map((s: { startMs: number; endMs: number;[key: string]: unknown }) => ({
                     ...s,
                     startMs: Math.round(s.startMs * scale),
                     endMs: Math.min(AUDIO_DURATION_MS, Math.round(s.endMs * scale)),
