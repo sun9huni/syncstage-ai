@@ -39,24 +39,28 @@ const tools = [{
 }];
 
 export async function POST(req: Request) {
+    // Parse body OUTSIDE try so fallback can access instruction
+    const body = await req.json().catch(() => ({}));
+    const { instruction, revision } = body;
+
+    if (!instruction) {
+        return NextResponse.json({ error: "No instruction provided" }, { status: 400 });
+    }
+
+    const currentState = getState();
+    if (!currentState.draft) {
+        return NextResponse.json({ error: "No draft available to patch" }, { status: 400 });
+    }
+
+    // Idempotency / Conflict checking
+    if (typeof revision === "number" && revision !== currentState.draft.revision) {
+        return NextResponse.json({
+            error: "Revision Conflict: The timeline has been updated by another action.",
+            currentRevision: currentState.draft.revision
+        }, { status: 409 });
+    }
+
     try {
-        const { instruction, revision } = await req.json();
-        if (!instruction) {
-            return NextResponse.json({ error: "No instruction provided" }, { status: 400 });
-        }
-
-        const currentState = getState();
-        if (!currentState.draft) {
-            return NextResponse.json({ error: "No draft available to patch" }, { status: 400 });
-        }
-
-        // Idempotency / Conflict checking
-        if (typeof revision === "number" && revision !== currentState.draft.revision) {
-            return NextResponse.json({
-                error: "Revision Conflict: The timeline has been updated by another action.",
-                currentRevision: currentState.draft.revision
-            }, { status: 409 });
-        }
 
         const chatArgs: any = {
             model: "gemini-2.0-flash",
@@ -133,42 +137,34 @@ Apply the necessary changes using the tools provided.
     } catch (error: any) {
         console.error("Patch API Error:", error);
 
-        // Graceful degradation: if Gemini is unavailable, apply a rule-based fallback patch
-        try {
-            const currentState = getState();
-            if (currentState.draft) {
-                const { instruction } = await req.clone().json().catch(() => ({ instruction: "" }));
-                const fallbackDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
-                const instLower = (instruction || "").toLowerCase();
+        // Graceful degradation: keyword-based fallback when Gemini is unavailable
+        const fallbackDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
+        const instLower = instruction.toLowerCase();
 
-                // Simple keyword-based fallback rules
-                if (instLower.includes("intense") || instLower.includes("powerful") || instLower.includes("강하") || instLower.includes("강렬")) {
-                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.min(10, s.intensity + 2) }));
-                } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
-                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
-                } else if (instLower.includes("hip") || instLower.includes("groove") || instLower.includes("힙합")) {
-                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_groove" as any }));
-                } else if (instLower.includes("pop") || instLower.includes("팝핀")) {
-                    fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "poppin_heavy" as any }));
-                } else if (instLower.includes("cyber") || instLower.includes("dark") || instLower.includes("어둡") || instLower.includes("사이버")) {
-                    fallbackDraft.visualConcept = { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and chrome neon accents on a dark futuristic stage with laser beams, 8k cinematic." };
-                } else {
-                    // Generic: boost all intensities slightly as "change"
-                    fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "y2k_point" as any, intensity: 8 };
-                }
+        if (instLower.includes("intense") || instLower.includes("powerful") || instLower.includes("강하") || instLower.includes("강렬") || instLower.includes("파워")) {
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.min(10, s.intensity + 2) }));
+        } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
+        } else if (instLower.includes("hip") || instLower.includes("groove") || instLower.includes("힙합")) {
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_groove" as any }));
+        } else if (instLower.includes("pop") || instLower.includes("팝핀")) {
+            fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "poppin_heavy" as any }));
+        } else if (instLower.includes("cyber") || instLower.includes("dark") || instLower.includes("어둡") || instLower.includes("사이버")) {
+            fallbackDraft.visualConcept = { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and chrome neon accents on a dark futuristic stage with laser beams, 8k cinematic." };
+        } else if (instLower.includes("y2k") || instLower.includes("포인트")) {
+            fallbackDraft.segments = fallbackDraft.segments.map((s, i) => i === fallbackDraft.segments.length - 1 ? { ...s, clipId: "y2k_point" as any, intensity: 9 } : s);
+        } else {
+            fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "poppin_heavy" as any, intensity: Math.min(10, fallbackDraft.segments[0].intensity + 1) };
+        }
 
-                fallbackDraft.revision += 1;
-                fallbackDraft.lastAction = instruction;
-                updateDraft(fallbackDraft, `[Fallback] ${instruction}`, { fallback: true });
+        fallbackDraft.revision += 1;
+        fallbackDraft.lastAction = instruction;
+        updateDraft(fallbackDraft, `[Fallback] ${instruction}`, { fallback: true });
 
-                return NextResponse.json({
-                    success: true,
-                    draft: fallbackDraft,
-                    message: `[Demo Mode] Applied pattern-based patch. (${error.message})`,
-                });
-            }
-        } catch (_) {}
-
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({
+            success: true,
+            draft: fallbackDraft,
+            message: `Applied pattern-based patch (AI offline fallback).`,
+        });
     }
 }
