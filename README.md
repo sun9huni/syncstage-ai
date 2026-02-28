@@ -30,7 +30,22 @@ graph TD
 
 ---
 
-## ⚠️ 3. Original Contribution (독창적 기여 명시 - **중요**)
+## 🏆 3. Hackathon Judging Criteria (왜 SyncStage AI인가?)
+
+심사 기준(엔터테인먼트 트랙)에 완벽히 부합하는 4가지 요소를 모두 갖추었습니다.
+
+1. **Impact (25%) - K-Pop 산업의 막대한 소통 비용 절감**
+   엔터테인먼트 강국 한국에서 A&R 디렉터, 안무가, 스타일리스트 간의 커뮤니케이션 오버헤드는 엄청납니다. SyncStage AI는 아이디어를 즉석에서 시각화하여 **빠른 프로토타이핑과 의사결정**을 돕는 강력한 B2B 솔루션입니다.
+2. **Demo (50%) - 극한의 환경에서도 멈추지 않는 'Zero-Fail' 아키텍처**
+   오프라인 엣지 캐싱 및 하드코딩된 'Golden Path Fallback' 로직을 겹겹이 설계하여, API Quota 초과나 Vercel 타임아웃 같은 라이브 해커톤 데모의 치명적 오류 상황에서도 **무조건 작동하는 프로덕션 레벨의 생존성(Resilience)**을 입증했습니다.
+3. **Creativity (15%) - 비디오 제너레이션이 아닌 "데이터 오케스트레이션(JSON)"**
+   무겁고 제어가 불가능한 비디오 생성형 AI를 쓰지 않았습니다. Gemini의 Function Calling 능력을 **'3D 상태(State)를 확정적으로 제어하는 Mutator'**로 재해석하여, 환각(Hallucination) 없이 정확한 구간(Segment)만 수정해내는 독창적인 접근법을 선보입니다.
+4. **Pitch (10%) - 사용자와 AI의 완벽한 페어 플레이**
+   단순한 결과물 출력이 아니라, 분석(Draft) ➡️ 적용(Visual) ➡️ 수정(Patch)으로 이어지는 사용자와 에이전트 간의 티키타카(Tiki-taka) 플로우를 직관적인 UI 페이즈(Phase 0~5)로 풀어냈습니다.
+
+---
+
+## ⚠️ 4. Original Contribution (독창적 기여 명시 - **중요**)
 
 > **심사위원 필독 사항 (DQ 방지 명시)**  
 > 프로그램 내에 렌더링되는 **3D 아바타 모델과 애니메이션 파일 자체는 Mixamo의 오픈소스 에셋**을 활용했습니다. 
@@ -38,7 +53,7 @@ graph TD
 
 ---
 
-## 🛠️ 4. 사용한 Google 핵심 기술 (Tech Stack)
+## 🛠️ 5. 사용한 Google 핵심 기술 (Tech Stack)
 
 | 구분 | 사용 기술 | 구현 내용 및 역할 |
 |---|---|---|
@@ -48,7 +63,7 @@ graph TD
 
 ---
 
-## 🚀 5. How to Run (데모 실행 방법)
+## 🚀 6. How to Run (데모 실행 방법)
 
 ```bash
 # Install dependencies

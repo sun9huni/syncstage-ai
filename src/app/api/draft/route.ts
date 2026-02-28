@@ -103,7 +103,10 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
 
         // Parse and validate the response
         const rawJson = JSON.parse(outputText);
-        console.log("[DRAFT] Gemini raw response (first 300 chars):", JSON.stringify(rawJson).substring(0, 300));
+        const rawStr = JSON.stringify(rawJson);
+        console.log("[DRAFT] Gemini raw response:", rawStr.substring(0, 500));
+        // Return raw for debug — REMOVE BEFORE FINAL SUBMIT
+        return NextResponse.json({ _debug_raw: rawJson, _raw_str: rawStr.substring(0, 800) });
 
         // Add id + coerce numeric fields — Gemini 2.5 Flash may return numbers as strings
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
