@@ -32,10 +32,12 @@ export async function POST(req: Request) {
         tempPath = join(os.tmpdir(), `${Date.now()}_${file.name}`);
         await writeFile(tempPath, buffer);
 
-        // Upload to Gemini
+        // Upload to Gemini — force audio/mpeg if browser sends application/octet-stream
+        const rawMime = file.type || "";
+        const mimeType = rawMime && rawMime !== "application/octet-stream" ? rawMime : "audio/mpeg";
         const uploadResult = await ai.files.upload({
             file: tempPath,
-            config: { mimeType: file.type || "audio/mp3" },
+            config: { mimeType },
         });
 
         // We need to wait for the file to be processed if it's audio/video
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
             contents: [
                 {
                     fileData: {
-                        mimeType: uploadResult.mimeType || "audio/mp3",
+                        mimeType: uploadResult.mimeType || mimeType,
                         fileUri: uploadResult.uri,
                     }
                 },
