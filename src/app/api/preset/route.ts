@@ -60,7 +60,7 @@ export async function POST() {
     try {
         updateDraft(DEMO_PRESET, "Demo preset loaded — ready for live presentation.");
         return NextResponse.json({ success: true, draft: DEMO_PRESET });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }

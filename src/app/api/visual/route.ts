@@ -61,8 +61,8 @@ export async function POST() {
                 style: concept.style,
             });
         }
-    } catch (imgErr: any) {
-        console.warn("Imagen 3 generation failed, using fallback:", imgErr.message);
+    } catch (imgErr: unknown) {
+        console.warn("Imagen 3 generation failed, using fallback:", (imgErr as Error).message);
     }
 
     // --- Fallback: Unsplash + Gemini text description ---
@@ -73,7 +73,7 @@ export async function POST() {
             contents: `Write one vivid sentence describing this K-pop stage concept for a wardrobe mood board: "${concept.style}, ${concept.imagePrompt.substring(0, 120)}"`,
         });
         description = textResp.text || description;
-    } catch (_) {
+    } catch {
         // silent fallback
     }
 

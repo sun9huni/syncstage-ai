@@ -12,6 +12,7 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
 }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const wavesurferRef = useRef<WaveSurfer | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const regionsPluginRef = useRef<any>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState("0.00");
@@ -59,7 +60,7 @@ export default function WaveformTimeline({ draft, audioUrl, onTimeUpdate }: {
         return () => {
             wavesurferRef.current?.destroy();
         };
-    }, [audioUrl]);
+    }, [audioUrl, onTimeUpdate]);
 
     // Update regions when draft changes
     useEffect(() => {

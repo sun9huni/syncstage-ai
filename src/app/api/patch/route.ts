@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 import { getState, updateDraft } from "@/lib/store";
 import { moveTags, SyncStageDraft } from "@/lib/schema";
-import { getPatchPrompt } from "@/lib/prompts";
+// Unused import removed
 
 const apiKey = process.env.GEMINI_API_KEY || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
@@ -62,9 +62,11 @@ export async function POST(req: Request) {
 
     try {
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const chatArgs: any = {
             model: "gemini-2.0-flash",
             config: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 tools: tools as any,
                 systemInstruction: `You are the AI A&R Director for SyncStage. 
                 Your job is to refine the K-pop choreography and visual concept based on user feedback.
@@ -90,14 +92,15 @@ Apply the necessary changes using the tools provided.
 
         const response = await chat.sendMessage({ message });
 
-        let updatedDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
+        const updatedDraft: SyncStageDraft = JSON.parse(JSON.stringify(currentState.draft));
         let patchCount = 0;
-        let changeSummary = [];
+        const changeSummary: string[] = [];
 
         // Handle MULTIPLE function calls (Parallel Tool Use)
         if (response.functionCalls && response.functionCalls.length > 0) {
             for (const call of response.functionCalls) {
                 if (call.name === "update_segment") {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const args = call.args as any;
                     updatedDraft.segments = updatedDraft.segments.map(seg => {
                         if (seg.id === args.id) {
@@ -113,6 +116,7 @@ Apply the necessary changes using the tools provided.
                     });
                     changeSummary.push(`Segment ${args.id} refined`);
                 } else if (call.name === "update_style") {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const args = call.args as any;
                     updatedDraft.visualConcept = { ...updatedDraft.visualConcept, ...args };
                     patchCount++;
@@ -123,7 +127,6 @@ Apply the necessary changes using the tools provided.
             if (patchCount > 0) {
                 updatedDraft.revision += 1;
                 updatedDraft.lastAction = instruction;
-                const finalActionStr = changeSummary.join(", ");
                 updateDraft(updatedDraft, instruction, { toolsUsed: changeSummary });
             }
         }
@@ -134,7 +137,7 @@ Apply the necessary changes using the tools provided.
             message: response.text || (patchCount > 0 ? `Applied ${patchCount} changes.` : "No changes needed."),
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Patch API Error:", error);
 
         // Graceful degradation: keyword-based fallback when Gemini is unavailable
@@ -146,14 +149,18 @@ Apply the necessary changes using the tools provided.
         } else if (instLower.includes("calm") || instLower.includes("soft") || instLower.includes("부드") || instLower.includes("잔잔")) {
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, intensity: Math.max(1, s.intensity - 2) }));
         } else if (instLower.includes("hip") || instLower.includes("groove") || instLower.includes("힙합")) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "hiphop_dance" as any }));
         } else if (instLower.includes("pop") || instLower.includes("팝핀") || instLower.includes("브레이크")) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fallbackDraft.segments = fallbackDraft.segments.map(s => ({ ...s, clipId: "arms_hiphop" as any }));
         } else if (instLower.includes("cyber") || instLower.includes("dark") || instLower.includes("어둡") || instLower.includes("사이버")) {
             fallbackDraft.visualConcept = { style: "Cyberpunk Dark", imagePrompt: "K-pop performers in black leather and chrome neon accents on a dark futuristic stage with laser beams, 8k cinematic." };
         } else if (instLower.includes("y2k") || instLower.includes("포인트") || instLower.includes("재즈")) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fallbackDraft.segments = fallbackDraft.segments.map((s, i) => i === fallbackDraft.segments.length - 1 ? { ...s, clipId: "jazz_dance" as any, intensity: 9 } : s);
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             fallbackDraft.segments[0] = { ...fallbackDraft.segments[0], clipId: "arms_hiphop" as any, intensity: Math.min(10, fallbackDraft.segments[0].intensity + 1) };
         }
 

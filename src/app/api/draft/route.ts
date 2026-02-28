@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export const maxDuration = 60; // Allow up to 60s for Gemini Files API + multimodal inference
 import { GoogleGenAI } from "@google/genai";
-import { SyncStageDraftSchema, SyncStageDraft } from "@/lib/schema";
+import { SyncStageDraftSchema } from "@/lib/schema";
 import { updateDraft } from "@/lib/store";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { writeFile, unlink } from "fs/promises";
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
 
         const systemInstruction = SYNCSTAGE_SYSTEM_PROMPT;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const schema = zodToJsonSchema(SyncStageDraftSchema as any);
 
         const response = await ai.models.generateContent({
@@ -81,6 +82,7 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
             config: {
                 systemInstruction: systemInstruction,
                 responseMimeType: "application/json",
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 responseSchema: schema as any,
             },
         });
@@ -95,6 +97,7 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
 
         // Add nanoid to segments
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             rawJson.segments.forEach((seg: any) => {
                 seg.id = "seg_" + nanoid(8);
             });
@@ -110,9 +113,9 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
         await ai.files.delete({ name: uploadResult.name || "" }).catch(console.error);
 
         return NextResponse.json(validatedDraft);
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Draft API Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     } finally {
         // Cleanup local temp file
         if (tempPath) {

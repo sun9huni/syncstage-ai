@@ -9,6 +9,7 @@ import { SyncStageDraft } from "@/lib/schema";
 
 export default function Home() {
   const [draft, setDraft] = useState<SyncStageDraft | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState("Gemini is Choreographing...");
@@ -60,7 +61,7 @@ export default function Home() {
       const stateData = await stateRes.json();
       setHistory(stateData.diffHistory || []);
     } catch (err: unknown) {
-      showError(`Upload failed: ${err.message}`);
+      showError(`Upload failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
       setLoadingMsg("Gemini is Choreographing...");
@@ -80,7 +81,7 @@ export default function Home() {
         setHistory([{ timestamp: new Date().toISOString(), description: "Demo preset loaded." }]);
       }
     } catch (err: unknown) {
-      showError(`Preset failed: ${err.message}`);
+      showError(`Preset failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
       setLoadingMsg("Gemini is Choreographing...");
@@ -108,7 +109,7 @@ export default function Home() {
         setHistory(stateData.diffHistory || []);
       }
     } catch (err: unknown) {
-      showError(`Patch failed: ${err.message}`);
+      showError(`Patch failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
       setLoadingMsg("Gemini is Choreographing...");
@@ -127,7 +128,7 @@ export default function Home() {
         setImageDescription(data.description || null);
       }
     } catch (err: unknown) {
-      showError(`Visual failed: ${err.message}`);
+      showError(`Visual failed: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setImageLoading(false);
     }
@@ -196,7 +197,7 @@ export default function Home() {
             )}
           </div>
           <div className="flex-1 relative">
-            <ThreeCanvas activeSegment={activeSegment} draft={draft} />
+            <ThreeCanvas activeSegment={activeSegment} />
             {loading && (
               <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-sm z-20">
                 <div className="w-12 h-12 border-4 border-fuchsia-500 border-t-transparent rounded-full animate-spin mb-4"></div>

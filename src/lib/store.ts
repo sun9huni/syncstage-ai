@@ -3,7 +3,7 @@ import { SyncStageDraft } from "./schema";
 export type StateDiff = {
     timestamp: string;
     description: string;
-    patchDetails?: any;
+    patchDetails?: unknown;
 };
 
 export type AppState = {
@@ -75,7 +75,7 @@ export function setState(newState: AppState) {
     globalState = newState;
 }
 
-export function updateDraft(draft: SyncStageDraft, diffMessage: string, details?: any) {
+export function updateDraft(draft: SyncStageDraft, diffMessage: string, details?: unknown) {
     globalState.draft = draft;
     globalState.diffHistory.push({
         timestamp: new Date().toISOString(),

@@ -12,7 +12,7 @@ import {
     useAnimations,
     Html,
 } from "@react-three/drei";
-import { SyncStageDraft, Segment } from "@/lib/schema";
+import { Segment } from "@/lib/schema";
 import { getStyleForClip } from "@/lib/motionConstants";
 import * as THREE from "three";
 
@@ -20,10 +20,10 @@ import * as THREE from "three";
 const SCALE = 0.01;
 
 const CLIP_PATHS: Record<string, string> = {
-    happy_idle:   "/models/happy_idle.glb",
+    happy_idle: "/models/happy_idle.glb",
     hiphop_dance: "/models/hiphop_dance.glb",
-    arms_hiphop:  "/models/arms_hiphop.glb",
-    jazz_dance:   "/models/jazz_dance.glb",
+    arms_hiphop: "/models/arms_hiphop.glb",
+    jazz_dance: "/models/jazz_dance.glb",
 };
 
 // Preload all dance animations on module init
@@ -43,6 +43,7 @@ function KPopDancer({ activeClip, color }: { activeClip: string; color: string }
     // Apply emissive tint to the character mesh to reflect segment style
     const tintedScene = useMemo(() => {
         const clone = scene.clone(true);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         clone.traverse((child: any) => {
             if (child.isMesh && child.material) {
                 const mat = child.material.clone();
@@ -78,10 +79,8 @@ function KPopDancer({ activeClip, color }: { activeClip: string; color: string }
 // ------------------------------------------------------------------
 export default function ThreeCanvas({
     activeSegment,
-    draft,
 }: {
     activeSegment?: Segment;
-    draft: SyncStageDraft | null;
 }) {
     // Default to happy_idle — NOT "idle_bounce" (not a valid clip)
     const activeClip = activeSegment?.clipId ?? "happy_idle";
