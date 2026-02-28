@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
 
-export const maxDuration = 60; // Allow up to 60s for Gemini Files API + multimodal inference
+export const maxDuration = 60;
 import { GoogleGenAI } from "@google/genai";
-import { SyncStageDraftSchema, SegmentSchema } from "@/lib/schema";
-import { z } from "zod";
+import { SyncStageDraftSchema } from "@/lib/schema";
 import { updateDraft } from "@/lib/store";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { writeFile, unlink } from "fs/promises";
 import { join } from "path";
 import os from "os";
 import { nanoid } from "nanoid";
 import { SYNCSTAGE_SYSTEM_PROMPT } from "@/lib/prompts";
 
-// Ensure we have a valid API Key
 const apiKey = process.env.GEMINI_API_KEY || "dummy-key-for-build";
 const ai = new GoogleGenAI({ apiKey });
 
@@ -27,7 +24,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "No file provided" }, { status: 400 });
         }
 
-        // Write file to a temporary location for Gemini Files API upload
+        // Write to temp file
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
         tempPath = join(os.tmpdir(), `${Date.now()}_${file.name}`);
@@ -41,7 +38,7 @@ export async function POST(req: Request) {
             config: { mimeType },
         });
 
-        // We need to wait for the file to be processed if it's audio/video
+        // Wait for file processing
         let fileResource = await ai.files.get({ name: uploadResult.name || "" });
         while (fileResource.state === "PROCESSING") {
             await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -52,17 +49,9 @@ export async function POST(req: Request) {
             throw new Error("File processing failed on Gemini.");
         }
 
-        const systemInstruction = SYNCSTAGE_SYSTEM_PROMPT;
-
-        // Schema WITHOUT id — Gemini 2.5 Flash mis-handles optional string fields.
-        // We add id server-side after receiving the response.
-        const GeminiResponseSchema = z.object({
-            segments: z.array(SegmentSchema.omit({ id: true })).min(1).max(10),
-            visualConcept: SyncStageDraftSchema.shape.visualConcept,
-        });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const schema = zodToJsonSchema(GeminiResponseSchema as any);
-
+        // Use responseMimeType=application/json only (no responseSchema).
+        // Gemini 2.5 Flash mis-parses zodToJsonSchema output.
+        // Instead, describe the exact JSON structure inline in the prompt.
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: [
@@ -73,26 +62,40 @@ export async function POST(req: Request) {
                     }
                 },
                 {
-                    text: `Listen deeply to this audio track using your native multimodal audio understanding.
+                    text: `You are a world-class K-pop choreography director. Listen deeply to this audio track.
 
-1. FEEL the drum beats, bass lines, and energy arcs from start to finish.
-2. FIND the exact millisecond timestamps where the energy shifts — especially the Beat Drop moment(s).
-3. BUILD a choreography timeline (segments) that maps each section's energy to the correct dance move:
-   - Calm intro → happy_idle
-   - Groove verse → hiphop_dance  
-   - Beat drop / maximum energy → arms_hiphop (intensity 9–10)
-   - Point choreography / elegant section → jazz_dance
-4. DERIVE the stage wardrobe concept from the audio's character and vibe.
-5. WRITE specific reasons that describe exactly what you heard in each segment.
+Analyze the audio and return ONLY a valid JSON object — no markdown, no explanation, just raw JSON.
 
-Return the SyncStageDraft JSON. Make it feel like a real K-pop production director made it.`
+The JSON must follow this EXACT structure:
+{
+  "segments": [
+    {
+      "startMs": <integer milliseconds>,
+      "endMs": <integer milliseconds>,
+      "clipId": <one of: "happy_idle" | "hiphop_dance" | "arms_hiphop" | "jazz_dance">,
+      "intensity": <integer 1-10>,
+      "reason": "<string max 140 chars describing what you heard>"
+    }
+  ],
+  "visualConcept": {
+    "style": "<string: e.g. Cyberpunk Streetwear>",
+    "imagePrompt": "<string 20-200 chars: detailed description for image generation>"
+  }
+}
+
+Rules:
+- Create 4-6 segments covering the full audio duration
+- Map energy levels: low intro → happy_idle, groove → hiphop_dance, beat drop → arms_hiphop (intensity 9-10), elegant → jazz_dance
+- All timestamps must be integers in milliseconds
+- intensity must be an integer 1-10
+- Derive visualConcept from the audio's emotional vibe and genre
+
+Return ONLY the JSON object. No other text.`
                 }
             ],
             config: {
-                systemInstruction: systemInstruction,
+                systemInstruction: SYNCSTAGE_SYSTEM_PROMPT,
                 responseMimeType: "application/json",
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                responseSchema: schema as any,
             },
         });
 
@@ -101,35 +104,33 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
             throw new Error("No output generated from Gemini");
         }
 
-        // Parse and validate the response
-        const rawJson = JSON.parse(outputText);
-        const rawStr = JSON.stringify(rawJson);
-        console.log("[DRAFT] Gemini raw response:", rawStr.substring(0, 500));
-        // Return raw for debug — REMOVE BEFORE FINAL SUBMIT
-        return NextResponse.json({ _debug_raw: rawJson, _raw_str: rawStr.substring(0, 800) });
+        console.log("[DRAFT] Raw response (first 400):", outputText.substring(0, 400));
 
-        // Add id + coerce numeric fields — Gemini 2.5 Flash may return numbers as strings
+        // Strip any accidental markdown code fences
+        const cleaned = outputText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
+        const rawJson = JSON.parse(cleaned);
+
+        // Normalize: ensure numeric fields are actual numbers (Gemini may return strings)
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             rawJson.segments = rawJson.segments.map((seg: any) => ({
-                ...(typeof seg === "object" && seg !== null ? seg : {}),
                 id: "seg_" + nanoid(8),
-                startMs: Number(seg.startMs),
-                endMs: Number(seg.endMs),
-                intensity: Math.round(Number(seg.intensity)),
+                startMs: Math.round(Number(seg.startMs ?? seg.start_ms ?? 0)),
+                endMs: Math.round(Number(seg.endMs ?? seg.end_ms ?? 1000)),
+                clipId: seg.clipId ?? seg.clip_id ?? "happy_idle",
+                intensity: Math.round(Number(seg.intensity ?? 5)),
+                reason: String(seg.reason ?? "").substring(0, 140),
             }));
         }
         rawJson.revision = 0;
 
         const validatedDraft = SyncStageDraftSchema.parse(rawJson);
-
-        // Update in-memory state
         updateDraft(validatedDraft, "Initial draft generated from audio upload.");
 
-        // Cleanup the remote file (optional)
         await ai.files.delete({ name: uploadResult.name || "" }).catch(console.error);
 
         return NextResponse.json(validatedDraft);
+
     } catch (error: unknown) {
         const errMsg = error instanceof Error ? error.message : String(error);
         console.error("[DRAFT FALLBACK TRIGGERED] Error:", errMsg);
@@ -190,7 +191,6 @@ Return the SyncStageDraft JSON. Make it feel like a real K-pop production direct
 
         return NextResponse.json({ ...validatedFallback, _fallback: true, _error: errMsg });
     } finally {
-        // Cleanup local temp file
         if (tempPath) {
             await unlink(tempPath).catch(console.error);
         }
