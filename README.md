@@ -12,11 +12,11 @@
 ```mermaid
 graph TD
     User([🎵 User Uploads Audio]) --> DraftAPI(API: /api/draft)
-    DraftAPI -->|Google Gemini 2.0 Flash| Analysis[Multimodal Audio Analysis\nExtracts Drops & Tension]
+    DraftAPI -->|Google Gemini 2.5 Flash| Analysis[Multimodal Audio Analysis\nExtracts Drops & Tension]
     Analysis -->|Generates JSON| Timeline[Structured Choreo Timeline State]
     Timeline --> UI[Real-time 3D React Three Fiber Rendering]
     UI --> VisualAPI(API: /api/visual)
-    VisualAPI -->|Imagen 3| StageImage[Generates K-Pop Stage Visual Image]
+    VisualAPI -->|Gemini Image Generation| StageImage[Generates K-Pop Stage Visual Image]
     
     UserFeedback([💬 User NLP Feedback]) --> PatchAPI(API: /api/patch)
     PatchAPI -->|Function Calling| PatchEngine[Agentic Patch Engine\nupdate_segment, update_style]
@@ -57,9 +57,9 @@ graph TD
 
 | 구분 | 사용 기술 | 구현 내용 및 역할 |
 |---|---|---|
-| **Audio Deep Listening** | **Gemini 2.0 Flash (Multimodal)** | 별도의 오디오 전처리 파이프라인 없이, 모델의 Native Audio 이해력을 활용하여 드럼 킥, 벌스, 비트 드롭 타임스탬프를 원본 그대로 분석해 타임라인 분할 |
+| **Audio Deep Listening** | **Gemini 2.5 Flash (Multimodal)** | 별도의 오디오 전처리 파이프라인 없이, 모델의 Native Audio 이해력을 활용하여 드럼 킥, 벌스, 비트 드롭 타임스탬프를 원본 그대로 분석해 타임라인 분할 |
 | **Agentic Function Calling** | **Gemini SDK (Structured Output)** | 사용자의 텍스트 피드백을 `update_segment`, `update_style` 등의 확정된 함수 도구(Tools)와 JSON 객체로 변환하여 사이드 이펙트 없이 3D 앱의 상태 제어 |
-| **Stage Visual Generation** | **Imagen 3 (imagen-3.0-generate-002)** | 오디오 무드 분석을 통해 도출된 영어 텍스트 프롬프트를 바탕으로 고해상도 매거진 퀄리티의 K-Pop 무대 의상 컨셉 시각화 |
+| **Stage Visual Generation** | **Gemini Image Generation** | 오디오 무드 분석을 통해 도출된 영어 텍스트 프롬프트를 바탕으로 고해상도 매거진 퀄리티의 K-Pop 무대 의상 컨셉 시각화 |
 
 ---
 
@@ -112,9 +112,9 @@ Open [http://localhost:3000](http://localhost:3000)
 
 | Category | Technology Used | Implementation Content and Role |
 |---|---|---|
-| **Audio Deep Listening** | **Gemini 2.0 Flash (Multimodal)** | Utilizes the model's native audio understanding to analyze drum kicks, verses, and beat drop timestamps directly from the source without a separate audio preprocessing pipeline, and splits the timeline accordingly. |
+| **Audio Deep Listening** | **Gemini 2.5 Flash (Multimodal)** | Utilizes the model's native audio understanding to analyze drum kicks, verses, and beat drop timestamps directly from the source without a separate audio preprocessing pipeline, and splits the timeline accordingly. |
 | **Agentic Function Calling** | **Gemini SDK (Structured Output)** | Converts user text feedback into fixed function tools (Tools) and JSON objects like `update_segment` and `update_style` to control the 3D app's state without side effects. |
-| **Stage Visual Generation** | **Imagen 3 (imagen-3.0-generate-002)** | Visualizes high-resolution magazine-quality K-Pop stage costume concepts based on English text prompts derived from audio mood analysis. |
+| **Stage Visual Generation** | **Gemini Image Generation** | Visualizes high-resolution magazine-quality K-Pop stage costume concepts based on English text prompts derived from audio mood analysis. |
 
 ---
 

@@ -245,7 +245,7 @@ export default function Home() {
               <div className="flex justify-center gap-2 pt-2">
                 <span className="text-[9px] px-2 py-1 bg-blue-900/40 border border-blue-700/30 text-blue-300 rounded-full font-mono">Gemini 2.5 Flash</span>
                 <span className="text-[9px] px-2 py-1 bg-violet-900/40 border border-violet-700/30 text-violet-300 rounded-full font-mono">Function Calling</span>
-                <span className="text-[9px] px-2 py-1 bg-fuchsia-900/40 border border-fuchsia-700/30 text-fuchsia-300 rounded-full font-mono">Imagen 4</span>
+                <span className="text-[9px] px-2 py-1 bg-fuchsia-900/40 border border-fuchsia-700/30 text-fuchsia-300 rounded-full font-mono">Gemini Image</span>
               </div>
             </div>
             <div className="flex flex-col gap-3 items-center">

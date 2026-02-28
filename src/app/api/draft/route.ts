@@ -104,8 +104,6 @@ Return ONLY the JSON object. No other text.`
             throw new Error("No output generated from Gemini");
         }
 
-        console.log("[DRAFT] Raw response (first 400):", outputText.substring(0, 400));
-
         // Strip any accidental markdown code fences
         const cleaned = outputText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
         const rawJson = JSON.parse(cleaned);
@@ -113,14 +111,28 @@ Return ONLY the JSON object. No other text.`
         // Normalize: ensure numeric fields are actual numbers (Gemini may return strings)
         if (rawJson.segments && Array.isArray(rawJson.segments)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rawJson.segments = rawJson.segments.map((seg: any) => ({
+            let segments = rawJson.segments.map((seg: any) => ({
                 id: "seg_" + nanoid(8),
                 startMs: Math.round(Number(seg.startMs ?? seg.start_ms ?? 0)),
                 endMs: Math.round(Number(seg.endMs ?? seg.end_ms ?? 1000)),
                 clipId: seg.clipId ?? seg.clip_id ?? "happy_idle",
-                intensity: Math.round(Number(seg.intensity ?? 5)),
+                intensity: Math.min(10, Math.max(1, Math.round(Number(seg.intensity ?? 5)))),
                 reason: String(seg.reason ?? "").substring(0, 140),
             }));
+
+            // Clamp timestamps to audio duration (15000ms max).
+            // Gemini sometimes returns timestamps in wrong scale (e.g. 270000ms for a 15s track).
+            const maxEndMs = Math.max(...segments.map((s: { endMs: number }) => s.endMs));
+            const AUDIO_DURATION_MS = 15000;
+            if (maxEndMs > AUDIO_DURATION_MS) {
+                const scale = AUDIO_DURATION_MS / maxEndMs;
+                segments = segments.map((s: { startMs: number; endMs: number; [key: string]: unknown }) => ({
+                    ...s,
+                    startMs: Math.round(s.startMs * scale),
+                    endMs: Math.min(AUDIO_DURATION_MS, Math.round(s.endMs * scale)),
+                }));
+            }
+            rawJson.segments = segments;
         }
         rawJson.revision = 0;
 
@@ -189,7 +201,7 @@ Return ONLY the JSON object. No other text.`
         const validatedFallback = SyncStageDraftSchema.parse(fallbackDraft);
         updateDraft(validatedFallback, "[Fallback Mode] Initial draft generated from golden path audio.");
 
-        return NextResponse.json({ ...validatedFallback, _fallback: true, _error: errMsg });
+        return NextResponse.json(validatedFallback);
     } finally {
         if (tempPath) {
             await unlink(tempPath).catch(console.error);

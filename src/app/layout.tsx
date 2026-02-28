@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "SyncStage AI — K-pop Choreography Director",
-  description: "Upload a K-pop demo track → Gemini 2.0 Flash deep-listens to beats → auto-generates 3D choreography timeline + stage wardrobe via Imagen 3. Refine with natural language Function Calling.",
+  description: "Upload a K-pop demo track → Gemini 2.5 Flash deep-listens to beats → auto-generates 3D choreography timeline + stage wardrobe via Gemini Image Generation. Refine with natural language Function Calling.",
   openGraph: {
     title: "SyncStage AI",
     description: "AI A&R Director powered by Gemini — audio to choreography in seconds.",

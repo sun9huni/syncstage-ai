@@ -115,12 +115,12 @@ export async function POST() {
         // silent fallback
     }
 
+    console.warn("[VISUAL] Using Unsplash fallback. Gemini image error:", imagenError?.substring(0, 100));
     return NextResponse.json({
         success: true,
         imageUrl: fallbackUrl,
         description,
         source: "fallback",
         style: concept.style,
-        _imagenError: imagenError,
     });
 }
