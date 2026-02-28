@@ -15,7 +15,7 @@ export default function Home() {
   const [loadingMsg, setLoadingMsg] = useState("Gemini is Choreographing...");
   const [chatInput, setChatInput] = useState("");
   const [currentTimeMs, setCurrentTimeMs] = useState(0);
-  const [audioUrl, setAudioUrl] = useState<string | null>("/demo.wav");
+  const [audioUrl, setAudioUrl] = useState<string | null>("/musics/demo_kpop_15s.mp3");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Image Generation States
@@ -76,7 +76,7 @@ export default function Home() {
       const data = await res.json();
       if (data.success) {
         setDraft(data.draft);
-        setAudioUrl("/demo.wav");
+        setAudioUrl("/musics/demo_kpop_15s.mp3");
         setImageUrl(null);
         setHistory([{ timestamp: new Date().toISOString(), description: "Demo preset loaded." }]);
       }
@@ -213,9 +213,9 @@ export default function Home() {
             <span className="text-neutral-400">Audio Master Pipeline</span>
             <div className="flex gap-2">
               <button
-                onClick={() => setAudioUrl("/demo.wav")}
+                onClick={() => setAudioUrl("/musics/demo_kpop_15s.mp3")}
                 className="bg-neutral-700 hover:bg-neutral-600 text-neutral-300 px-2 py-1 rounded text-[10px] transition-all border border-neutral-600"
-                title="Load built-in demo track"
+                title="Load built-in K-pop demo track"
               >
                 DEMO TRACK
               </button>

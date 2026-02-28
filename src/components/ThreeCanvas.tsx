@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, Suspense, useMemo } from "react";
+import React, { useEffect, useRef, Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
     OrbitControls,
@@ -40,36 +40,30 @@ function KPopDancer({ activeClip, color }: { activeClip: string; color: string }
     const group = useRef<THREE.Group>(null);
     const { actions } = useAnimations(animations, group);
 
-    // Apply emissive tint to the character mesh to reflect segment style
-    const tintedScene = useMemo(() => {
-        const clone = scene.clone(true);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        clone.traverse((child: any) => {
-            if (child.isMesh && child.material) {
-                const mat = child.material.clone();
-                // subtle emissive tint
-                mat.emissive = new THREE.Color(color).multiplyScalar(0.15);
-                child.material = mat;
+    // Tint meshes via useEffect (clone breaks SkinnedMesh skeleton binding)
+    useEffect(() => {
+        scene.traverse((child: THREE.Object3D) => {
+            if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh;
+                if (mesh.material && (mesh.material as THREE.MeshStandardMaterial).emissive) {
+                    (mesh.material as THREE.MeshStandardMaterial).emissive.set(
+                        new THREE.Color(color).multiplyScalar(0.15)
+                    );
+                }
             }
         });
-        return clone;
     }, [scene, color]);
 
     useEffect(() => {
-        // Play ALL animation tracks — each represents one bone's motion track
         const allActions = Object.values(actions);
         if (allActions.length === 0) return;
-        allActions.forEach(a => {
-            a?.reset().fadeIn(0.4).play();
-        });
-        return () => {
-            allActions.forEach(a => a?.fadeOut(0.4));
-        };
+        allActions.forEach(a => a?.reset().fadeIn(0.4).play());
+        return () => { allActions.forEach(a => a?.fadeOut(0.4)); };
     }, [actions, activeClip]);
 
     return (
         <group ref={group}>
-            <primitive object={tintedScene} scale={SCALE} position={[0, 0, 0]} castShadow />
+            <primitive object={scene} scale={SCALE} position={[0, 0, 0]} castShadow />
         </group>
     );
 }

@@ -17,47 +17,47 @@ const initialDraft: SyncStageDraft = {
         {
             id: "seg_01",
             startMs: 0,
-            endMs: 8000,
+            endMs: 3000,
             clipId: "happy_idle",
             intensity: 3,
-            reason: "Soft intro — minimal percussion, establishing stage presence."
+            reason: "Intro — sparse hi-hat builds anticipation before the first drop."
         },
         {
             id: "seg_02",
-            startMs: 8000,
-            endMs: 20000,
+            startMs: 3000,
+            endMs: 6500,
             clipId: "hiphop_dance",
             intensity: 6,
-            reason: "Pre-chorus builds momentum with syncopated groove."
+            reason: "Verse groove — syncopated kick + snare pattern locks the rhythm in."
         },
         {
             id: "seg_03",
-            startMs: 20000,
-            endMs: 34000,
+            startMs: 6500,
+            endMs: 10000,
             clipId: "arms_hiphop",
-            intensity: 9,
-            reason: "Main hook — full bass drop, maximum energy, crowd moment."
+            intensity: 10,
+            reason: "BEAT DROP — full bass explosion, maximum power arms, crowd ignition."
         },
         {
             id: "seg_04",
-            startMs: 34000,
-            endMs: 46000,
+            startMs: 10000,
+            endMs: 13000,
             clipId: "jazz_dance",
-            intensity: 5,
-            reason: "Bridge — melodic interlude with smooth fluid transitions."
+            intensity: 7,
+            reason: "Point choreo — melodic highlight with precise, elegant signature move."
         },
         {
             id: "seg_05",
-            startMs: 46000,
-            endMs: 60000,
+            startMs: 13000,
+            endMs: 15000,
             clipId: "arms_hiphop",
-            intensity: 8,
-            reason: "Final chorus — signature point move, iconic ending pose."
+            intensity: 9,
+            reason: "FINALE — explosive ending pose, freeze frame, curtain call."
         }
     ],
     visualConcept: {
         style: "Cyberpunk Streetwear",
-        imagePrompt: "Five K-pop performers in iridescent holographic jackets and chrome accessories on a neon-lit rain-slicked stage, dramatic fog, 8k cinematic."
+        imagePrompt: "Five K-pop idols in iridescent holographic jackets and chrome accessories on a neon-lit rain-slicked stage, dramatic fog, 8k cinematic."
     }
 };
 
