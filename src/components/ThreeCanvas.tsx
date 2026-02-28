@@ -130,7 +130,10 @@ export default function ThreeCanvas({
                 }
             >
                 <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-                    <KPopDancer activeClip={activeClip} color={activeStyle.color} />
+                    {/* key={activeClip}: forces full remount on clip change so
+                        useAnimations binds to the correct new scene's bones,
+                        not the stale previous scene (T-pose bug fix) */}
+                    <KPopDancer key={activeClip} activeClip={activeClip} color={activeStyle.color} />
                 </Float>
 
                 <ContactShadows
